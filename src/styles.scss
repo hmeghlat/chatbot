@@ -1,1 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* 🌈 Définition du thème global */
+:root {
+    --primary-color: #A0E7E5;
+    --secondary-color: #B4A0E5;
+    --accent-color: #FFAEBC;
+    --background-color: #FAF3DD;
+    --text-color: #333;
+    --gradient-bg: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  }
+  
+  /* Appliquer le fond dégradé pastel */
+  body {
+    background: var(--gradient-bg);
+    color: var(--text-color);
+    font-family: "Poppins", sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
