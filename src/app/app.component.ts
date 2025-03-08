@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { ChatbotComponent } from './components/chatbot/chatbot.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,ChatbotComponent],
-  standalone: true, 
+  standalone: true,
+  imports: [RouterOutlet, CommonModule], // Ajoute CommonModule pour éviter les erreurs *ngIf et autres
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   title = 'chatbot-mental';

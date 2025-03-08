@@ -1,0 +1,55 @@
+<!-- 🌍 Conteneur global de la page -->
+<div class="page-wrapper">
+  <!-- 🌅 Navigation entre Login et Sign Up -->
+  <div class="auth-switch">
+    <button class="switch-btn" [class.active]="isLoginActive" (click)="toggleForm(true)">Login</button>
+    <button class="switch-btn" [class.active]="!isLoginActive" (click)="toggleForm(false)">Sign Up</button>
+  </div>
+  
+  <!-- 📦 Conteneur principal -->
+  <div class="login-container">
+    <!-- Formulaire de Connexion -->
+    <div class="login-box" *ngIf="isLoginActive">
+      <div class="logo">
+        <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo">
+        <h1 class="gradient-text">MindHorizon</h1>
+      </div>
+      <p class="subtitle">Your AI companion for mental health</p>
+      <form (submit)="onLogin()">
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Entrez votre email" [(ngModel)]="email" [ngModelOptions]="{standalone: true}" required>
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Entrez votre mot de passe" [(ngModel)]="password" [ngModelOptions]="{standalone: true}" required>
+        </div>
+        <button type="submit" class="login-btn">Log in</button>
+      </form>
+    </div>
+    
+    <!-- Formulaire d'inscription -->
+    <div class="login-box" *ngIf="!isLoginActive">
+      <div class="logo">
+        <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo">
+        <h1 class="gradient-text">MindHorizon</h1>
+      </div>
+      <p class="subtitle">Join us now</p>
+      <form (submit)="onSignup()">
+        <div class="input-group">
+          <label for="username">User Name</label>
+          <input type="text" id="username" placeholder="Votre nom" [(ngModel)]="username" [ngModelOptions]="{standalone: true}" required>
+        </div>
+        <div class="input-group">
+          <label for="email-signup">Email</label>
+          <input type="email" id="email-signup" placeholder="Entrez votre email" [(ngModel)]="emailSignup" [ngModelOptions]="{standalone: true}"required>
+        </div>
+        <div class="input-group">
+          <label for="password-signup">Password</label>
+          <input type="password" id="password-signup" placeholder="Entrez votre mot de passe" [(ngModel)]="passwordSignup" [ngModelOptions]="{standalone: true}" required>
+        </div>
+        <button type="submit" class="login-btn">Sign up</button>
+      </form>
+    </div>
+  </div>
+</div>

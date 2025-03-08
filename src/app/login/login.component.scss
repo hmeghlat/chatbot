@@ -1,0 +1,185 @@
+/* 🎨 Palette de couleurs */
+$primary-color: #646cff;
+$secondary-color: #b3b3cc;
+$text-color: #333;
+$border-radius: 20px;
+$glass-effect: rgba(255, 255, 255, 0.25);
+$input-bg: rgba(255, 255, 255, 0.3);
+$shadow-color: rgba(0, 0, 0, 0.15);
+
+/* 🌍 Page Wrapper - Effet Horizon */
+.page-wrapper {
+  background: linear-gradient(to bottom, #ddeafb 0%, #b8d1f5 50%, #90c4f2 100%);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+
+/* 🌟 Navigation entre Login & Sign Up */
+.auth-switch {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.switch-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #999;
+  position: relative;
+  font-weight: 500;
+  transition: 0.3s ease-in-out;
+
+  &.active {
+    color: $primary-color;
+    font-weight: bold;
+
+    &::after {
+      content: "";
+      width: 100%;
+      height: 2px;
+      background: $primary-color;
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+    }
+  }
+
+  
+}
+
+/* 📦 Conteneur principal */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.login-box {
+  background: linear-gradient(to bottom, #ddade6 0%, #90c4f2 50%, rgba(255, 255, 255, 1) 100%);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  width: 100%;
+  max-width: 450px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: transform 0.3s ease-in-out;
+  position: relative;
+  color: white;
+
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  }
+
+ 
+}
+
+
+/* 🌐 Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 2;
+
+  
+
+  img {
+    width: 50px;
+  }
+
+  .logo h1 {
+    font-size: 24px;
+    font-weight: bold;
+    background: linear-gradient(to right, #ddade6, #90c4f2);
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    filter: brightness(1.2); /* Augmente la visibilité du texte */
+  }
+  
+}
+
+/* 📩 Inputs */
+.input-group {
+  text-align: left;
+  margin-bottom: 20px;
+  position: relative;
+  
+
+  label {
+    font-size: 14px;
+    color: $text-color;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 5px;
+    color: white;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: $border-radius;
+    font-size: 16px;
+    background: $input-bg;
+    color: $text-color;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+
+    &:focus {
+      box-shadow: 0 0 10px rgba(100, 108, 255, 0.4);
+      background: rgba(255, 255, 255, 0.25);
+    }
+  }
+}
+
+/* 🔵 Boutons */
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: $border-radius;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #646cff, #747bff);
+  box-shadow: 0 4px 10px rgba(100, 108, 255, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(100, 108, 255, 0.5);
+  }
+}
+
+/* 📱 Responsive */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 30px;
+    max-width: 90%;
+  }
+
+  .switch-btn {
+    font-size: 16px;
+  }
+
+  .login-btn {
+    font-size: 16px;
+  }
+}
