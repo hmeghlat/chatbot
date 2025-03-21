@@ -1,185 +1,128 @@
-/* 🎨 Palette de couleurs */
-$primary-color: #646cff;
-$secondary-color: #b3b3cc;
-$text-color: #333;
-$border-radius: 20px;
-$glass-effect: rgba(255, 255, 255, 0.25);
-$input-bg: rgba(255, 255, 255, 0.3);
-$shadow-color: rgba(0, 0, 0, 0.15);
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
-/* 🌍 Page Wrapper - Effet Horizon */
 .page-wrapper {
-  background: linear-gradient(to bottom, #ddeafb 0%, #b8d1f5 50%, #90c4f2 100%);
-  height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
+  height: 100vh;
+  background:  linear-gradient(90deg, #6A5ACD, #A0C4FF);
 }
 
-
-/* 🌟 Navigation entre Login & Sign Up */
 .auth-switch {
   display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
+  justify-content: center;
+  margin-bottom: 15px;
 }
 
 .switch-btn {
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
   background: none;
-  border: none;
-  font-size: 18px;
   cursor: pointer;
-  color: #999;
-  position: relative;
-  font-weight: 500;
-  transition: 0.3s ease-in-out;
-
-  &.active {
-    color: $primary-color;
-    font-weight: bold;
-
-    &::after {
-      content: "";
-      width: 100%;
-      height: 2px;
-      background: $primary-color;
-      position: absolute;
-      bottom: -5px;
-      left: 0;
-    }
-  }
-
-  
+  padding: 10px 20px;
+  color: rgba(0, 0, 0, 0.5);
+  transition: color 0.3s ease-in-out;
 }
 
-/* 📦 Conteneur principal */
-.login-container {
+.switch-btn.active {
+  color: #6A5ACD;
+  text-decoration: underline;
+}
+
+/* Ajout d'un conteneur pour mieux gérer l'animation */
+.auth-container {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
 }
 
+/* Styles de la boîte de connexion */
 .login-box {
-  background: linear-gradient(to bottom, #ddade6 0%, #90c4f2 50%, rgba(255, 255, 255, 1) 100%);
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.05); /* Ombre légère par défaut */
+  width: 400px;
   text-align: center;
-  width: 100%;
-  max-width: 450px;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  transition: transform 0.3s ease-in-out;
-  position: relative;
-  color: white;
-
-  &:hover {
-    transform: scale(1.02);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-  }
-
- 
+  transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
-
-/* 🌐 Logo */
-.logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 15px;
-  position: relative;
-  z-index: 2;
-
-  
-
-  img {
-    width: 50px;
-  }
-
-  .logo h1 {
-    font-size: 24px;
-    font-weight: bold;
-    background: linear-gradient(to right, #ddade6, #90c4f2);
-    -webkit-text-fill-color: transparent;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    filter: brightness(1.2); /* Augmente la visibilité du texte */
-  }
-  
+/* Ajout d'un effet plus fort sur le formulaire actif */
+.login-box.active {
+  box-shadow: 0px 10px 30px rgba(106, 90, 205, 0.4);
+  transform: scale(1.02);
 }
 
-/* 📩 Inputs */
-.input-group {
-  text-align: left;
+/* Style du logo */
+.logo img {
+  width: 50px;
+  margin-bottom: 10px;
+}
+
+/* Dégradé sur le texte du titre */
+h1.gradient-text {
+  font-size: 24px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  background:  linear-gradient(90deg, #6A5ACD, #A0C4FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Sous-titre */
+.subtitle {
+  font-size: 14px;
+  color: gray;
   margin-bottom: 20px;
-  position: relative;
-  
-
-  label {
-    font-size: 14px;
-    color: $text-color;
-    font-weight: 500;
-    display: block;
-    margin-bottom: 5px;
-    color: white;
-  }
-
-  input {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: $border-radius;
-    font-size: 16px;
-    background: $input-bg;
-    color: $text-color;
-    outline: none;
-    transition: all 0.3s ease-in-out;
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
-
-    &:focus {
-      box-shadow: 0 0 10px rgba(100, 108, 255, 0.4);
-      background: rgba(255, 255, 255, 0.25);
-    }
-  }
 }
 
-/* 🔵 Boutons */
-.login-btn {
+/* Message d'erreur */
+.auth-message {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* Input et labels */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+.input-group input {
+  font-size: 16px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+  outline: none;
+}
+
+/* Bouton d'authentification */
+.auth-btn {
   width: 100%;
-  padding: 14px;
-  font-size: 18px;
-  font-weight: bold;
-  color: white;
+  padding: 12px;
   border: none;
-  border-radius: $border-radius;
+  background: linear-gradient(90deg, #6A5ACD, #A0C4FF);
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
-  margin-top: 10px;
-  background: linear-gradient(135deg, #646cff, #747bff);
-  box-shadow: 0 4px 10px rgba(100, 108, 255, 0.3);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(100, 108, 255, 0.5);
-  }
 }
 
-/* 📱 Responsive */
-@media (max-width: 480px) {
-  .login-box {
-    padding: 30px;
-    max-width: 90%;
-  }
-
-  .switch-btn {
-    font-size: 16px;
-  }
-
-  .login-btn {
-    font-size: 16px;
-  }
+.auth-btn:hover {
+  opacity: 0.9;
 }

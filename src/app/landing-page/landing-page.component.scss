@@ -1,0 +1,248 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+/* 🌍 Général */
+.landing-wrapper {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(90deg, #6A5ACD, #A0C4FF);
+    color: white;
+    text-align: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+/* 🏠 Barre de navigation FIXE */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    position: fixed;
+    width: 95%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    transition: background 0.3s ease-in-out;
+  }
+  
+/* 🌐 Logo */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  
+    img {
+      width: 50px;
+    }
+  
+    .logo span {
+      font-size: 24px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      background: white;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+nav h1 {
+  font-size: 24px;
+}
+
+/* 🏠 Liens navigation */
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 18px;
+    border-bottom: 2px solid transparent;
+    transition: border-bottom 0.3s;
+  }
+  
+.nav-links a:hover {
+    border-bottom: 2px solid white;
+  }
+  
+/* 🌅 Header */
+header {
+    height: 100vh; /* Pleine hauteur */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 60px; /* Pour éviter d'être caché par la navbar */
+  }
+
+/* 🔹 Texte principal */
+.welcome-title {
+    font-size: 50px;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+    animation: fadeIn 1s ease-in-out;
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #D8A7FF, #A0C4FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    font-size: 18px;
+    margin-bottom: 30px;
+    opacity: 0.9;
+    animation: fadeIn 1.2s ease-in-out;
+  }
+/* 🌟 Boutons */
+.buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  /* 🎯 Bouton Principal */
+  .primary-btn {
+    padding: 12px 25px;
+    font-size: 18px;
+    font-weight: 600;
+    border: 2px solid white;
+    background: white;
+    color: #6A5ACD;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .primary-btn:hover {
+    background: transparent;
+    color: white;
+  }
+  
+  /* 🔵 Bouton Secondaire */
+  .secondary-btn {
+    padding: 12px 25px;
+    font-size: 18px;
+    font-weight: 600;
+    border: 2px solid white;
+    background: transparent;
+    color: white;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .secondary-btn:hover {
+    background: white;
+    color: #6A5ACD;
+  }
+  
+  /* 🔮 Animation fadeIn */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  
+
+  .presentation {
+    display: flex;
+    justify-content: center;
+    padding: 50px 20px;
+  }
+  
+  .card {
+    display: flex;
+    flex-direction: column;
+    background: white;
+    color: black;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 900px;
+    text-align: justify; /* Justification du texte */
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .card h2 {
+    text-align: center; /* Centrer le titre */
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+  
+  .card p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 15px;
+  }
+  
+  /* Effet au survol */
+  .card:hover {
+    transform: scale(1.02);
+  }
+  
+  /* Ajout d'un séparateur */
+  .card hr {
+    width: 50%;
+    height: 2px;
+    background: #6A5ACD;
+    border: none;
+    margin: 10px auto;
+  }
+  
+
+/* 🚀 Features */
+.features {
+  padding: 50px 20px;
+}
+
+.features-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.feature {
+  background: white;
+  color: black;
+  padding: 20px;
+  border-radius: 10px;
+  width: 250px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.feature img {
+  width: 80px;
+  margin-bottom: 10px;
+}
+
+.feature:hover {
+  transform: translateY(-5px);
+}
+
+/* 🎭 Journal Section */
+.journal-section {
+  padding: 50px 20px;
+}
+
+.journal-preview img {
+  width: 250px;
+  margin-top: 20px;
+}
+
+/* 📞 Footer */
+footer {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  margin-top: 50px;
+}

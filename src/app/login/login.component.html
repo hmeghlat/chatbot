@@ -1,55 +1,62 @@
 <!-- 🌍 Conteneur global de la page -->
 <div class="page-wrapper">
   <!-- 🌅 Navigation entre Login et Sign Up -->
-  <div class="auth-switch">
+  <div class="auth-switch" *ngIf="!showQuiz">
     <button class="switch-btn" [class.active]="isLoginActive" (click)="toggleForm(true)">Login</button>
     <button class="switch-btn" [class.active]="!isLoginActive" (click)="toggleForm(false)">Sign Up</button>
   </div>
-  
+
   <!-- 📦 Conteneur principal -->
-  <div class="login-container">
+  <div class="auth-container" *ngIf="!showQuiz">
     <!-- Formulaire de Connexion -->
-    <div class="login-box" *ngIf="isLoginActive">
+    <div class="login-box" *ngIf="isLoginActive" [class.active]="isLoginActive">
       <div class="logo">
         <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo">
-        <h1 class="gradient-text">MindHorizon</h1>
       </div>
+      <h1 class="gradient-text">MindHorizon</h1>
       <p class="subtitle">Your AI companion for mental health</p>
-      <form (submit)="onLogin()">
+
+      <!-- Message d'erreur -->
+      <p class="auth-message" *ngIf="authMessage">{{ authMessage }}</p>
+
+      <form (submit)="onLogin(); $event.preventDefault()">
         <div class="input-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" placeholder="Entrez votre email" [(ngModel)]="email" [ngModelOptions]="{standalone: true}" required>
+          <label for="username">User Name</label>
+          <input type="text" id="username" name="username" placeholder="Enter your username" [(ngModel)]="username" required>
         </div>
         <div class="input-group">
           <label for="password">Password</label>
-          <input type="password" id="password" placeholder="Entrez votre mot de passe" [(ngModel)]="password" [ngModelOptions]="{standalone: true}" required>
+          <input type="password" id="password" name="password" placeholder="Enter your password" [(ngModel)]="password" required>
         </div>
-        <button type="submit" class="login-btn">Log in</button>
+        <button type="submit" class="auth-btn">Log in</button>
       </form>
     </div>
-    
+
     <!-- Formulaire d'inscription -->
-    <div class="login-box" *ngIf="!isLoginActive">
+    <div class="login-box" *ngIf="!isLoginActive" [class.active]="!isLoginActive">
       <div class="logo">
         <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo">
-        <h1 class="gradient-text">MindHorizon</h1>
       </div>
+      <h1 class="gradient-text">MindHorizon</h1>
       <p class="subtitle">Join us now</p>
-      <form (submit)="onSignup()">
+
+      <!-- Message d'erreur -->
+      <p class="auth-message" *ngIf="authMessage">{{ authMessage }}</p>
+
+      <form (submit)="onSignup(); $event.preventDefault()">
         <div class="input-group">
-          <label for="username">User Name</label>
-          <input type="text" id="username" placeholder="Votre nom" [(ngModel)]="username" [ngModelOptions]="{standalone: true}" required>
-        </div>
-        <div class="input-group">
-          <label for="email-signup">Email</label>
-          <input type="email" id="email-signup" placeholder="Entrez votre email" [(ngModel)]="emailSignup" [ngModelOptions]="{standalone: true}"required>
+          <label for="username-signup">User Name</label>
+          <input type="text" id="username-signup" name="username-signup" placeholder="Enter your username" [(ngModel)]="username" required>
         </div>
         <div class="input-group">
           <label for="password-signup">Password</label>
-          <input type="password" id="password-signup" placeholder="Entrez votre mot de passe" [(ngModel)]="passwordSignup" [ngModelOptions]="{standalone: true}" required>
+          <input type="password" id="password-signup" name="password-signup" placeholder="Enter your password" [(ngModel)]="passwordSignup" required>
         </div>
-        <button type="submit" class="login-btn">Sign up</button>
+        <button type="submit" class="auth-btn">Sign up</button>
       </form>
     </div>
   </div>
+
+  <!-- 🌟 Affichage du Quiz -->
+  <app-quiz *ngIf="showQuiz"></app-quiz>
 </div>

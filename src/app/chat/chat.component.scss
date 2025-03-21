@@ -1,0 +1,175 @@
+/* 🌍 Conteneur Principal */
+.chat-container {
+    display: flex;
+    height: 100vh;
+   // background: linear-gradient(to bottom, #ddeafb, #b8d1f5, #90c4f2);
+  }
+  
+  /* 📌 Sidebar */
+  .chat-sidebar {
+    width: 300px;
+    background: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+ /* 🌐 Logo */
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 2;
+  
+    
+  
+    img {
+      width: 50px;
+    }
+  
+    .logo h1 {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(to right, #ddade6, #90c4f2);
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      filter: brightness(1.2); /* Augmente la visibilité du texte */
+      
+    }
+    
+  }
+  .search-bar {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  .chat-history {
+    margin-top: 20px;
+  }
+  
+  .chat-history h3 {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 5px;
+  }
+  
+  .chat-history p {
+    padding: 8px;
+    margin: 5px 0;
+    background: #f5f5f5;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  /* 🌈 Dégradé sur le titre */
+.chat-header h2 {
+    font-size: 24px;
+    font-weight: bold;
+    background: linear-gradient(to right, #ddade6, #90c4f2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .chat-sidebar .logo {
+    font-size: 20px;
+    font-weight: bold;
+    background: linear-gradient(to right, #ddade6, #90c4f2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+    
+  .sidebar-footer {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .settings-btn,
+  .about-btn {
+    border: none;
+    background: none;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  /* 📌 Zone de Chat */
+  .chat-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  /* 🔝 Header */
+  .chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 20px;
+    font-weight: bold;
+    
+  }
+  
+  .account-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* 💬 Messages */
+  .chat-messages {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  
+  .message {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .bot-message img {
+    width: 30px;
+    margin-right: 10px;
+  }
+  
+  /* 📩 Zone de Saisie */
+  .chat-input {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    font-size: 16px;
+  }
+  
+  .chat-icons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .chat-icons button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+  }
+  
