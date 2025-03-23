@@ -45,7 +45,7 @@ export class LoginComponent {
       )
       .subscribe(response => {
         if (response.access_token) {
-          localStorage.setItem('access_token', response.access_token);
+          localStorage.setItem('jwt', response.access_token);
           this.checkQuiz(); // ✅ Vérifier si le quiz est nécessaire
         } else {
           this.authMessage = 'Invalid credentials';

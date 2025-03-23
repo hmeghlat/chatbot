@@ -31,14 +31,21 @@
       </div>
   
       <div class="chat-messages">
-        <div class="message bot-message">
-          <img src="assets/hori.jpg" alt="Hori" />
-          <p><strong>Hi, I’m Hori,</strong> nice to meet you !</p>
+        <div *ngFor="let msg of messages" 
+             [ngClass]="{ 'message': true, 'bot-message': msg.sender === 'bot', 'user-message': msg.sender === 'user' }">
+          
+          <img *ngIf="msg.sender === 'bot'" src="assets/hori.jpg" alt="Hori" />
+          <p>{{ msg.text }}</p>
+      
         </div>
       </div>
+      
   
       <div class="chat-input">
-        <input type="text" placeholder="Message @Hori" />
+        <input type="text" [(ngModel)]="newMessage"  (keyup.enter)="sendMessage()" placeholder="Message @Hori" />
+        <div class="chat-icons">
+          <button (click)="sendMessage()">📨</button>
+        </div>
         <div class="chat-icons">
           <button>😊</button>
           <button>🎤</button>
