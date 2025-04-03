@@ -1,0 +1,156 @@
+:host {
+    display: block;
+    padding: 20px;
+    font-family: 'Nunito', sans-serif;
+  
+    @media (prefers-color-scheme: light) {
+      --bg-color: #f9faff;
+      --card-bg: #ffffff;
+      --text-color: #333;
+      --accent-color: #90c4f2;
+      --hover-bg: #e4efff;
+      --shadow: rgba(0, 0, 0, 0.08);
+    }
+  
+    @media (prefers-color-scheme: dark) {
+      --bg-color: #1f1f2e;
+      --card-bg: #292940;
+      --text-color: #f5f5f5;
+      --accent-color: #a6d1f7;
+      --hover-bg: #2f2f4a;
+      --shadow: rgba(0, 0, 0, 0.3);
+    }
+  
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+  }
+  
+  /* 📰 En-tête */
+  .feed-header {
+    text-align: center;
+    margin-bottom: 30px;
+  
+    h1 {
+      font-size: 32px;
+      font-weight: bold;
+      background: linear-gradient(to right, #ddade6, var(--accent-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  
+    p {
+      font-size: 16px;
+      color: var(--text-color);
+      opacity: 0.8;
+    }
+  }
+  
+  /* 🎛️ Boutons d'action */
+  .feed-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+  
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+  
+    .back-btn {
+      background-color: var(--accent-color);
+      color: white;
+  
+      &:hover {
+        background-color: #70b6ee;
+      }
+    }
+  
+    .logout-btn {
+      background-color: #ff6b6b;
+      color: white;
+  
+      &:hover {
+        background-color: #e14d4d;
+      }
+    }
+  }
+  
+  /* 📄 Grille des articles */
+  .feed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  
+  /* 🧱 Carte article */
+  .article-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px var(--shadow);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 320px; // 🔥 hauteur fixe cohérente
+    overflow: hidden;
+  
+    &:hover {
+      background: var(--hover-bg);
+      transform: translateY(-3px);
+    }
+  
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--accent-color);
+    }
+  
+    p {
+      font-size: 14px;
+      color: var(--text-color);
+      flex: 1;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 5; // 🔥 Limite à 5 lignes
+      -webkit-box-orient: vertical;
+    }
+  
+    .read-more {
+      margin-top: 10px;
+      text-align: right;
+  
+      a {
+        font-size: 14px;
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: bold;
+  
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+  
+  /* 📱 Responsive */
+  @media screen and (max-width: 600px) {
+    .feed-header h1 {
+      font-size: 26px;
+    }
+  
+    .article-card {
+      padding: 16px;
+      height: 280px;
+    }
+  }
+  

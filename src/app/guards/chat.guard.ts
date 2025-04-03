@@ -8,12 +8,13 @@ export class AuthGuard implements CanActivate {
   constructor(private router: Router) {}
 
   canActivate(): boolean {
-    const token = localStorage.getItem('access_token'); // Vérifie si un token existe
+    // Utilisation de la clé "jwt" pour récupérer le token
+    const token = localStorage.getItem('jwt');
 
     if (token && !this.isTokenExpired(token)) {
       return true;
     } else {
-      this.router.navigate(['/login']); // Redirige si le token est invalide
+      this.router.navigate(['/login']); // Redirige si le token est invalide ou absent
       return false;
     }
   }

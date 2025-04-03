@@ -27,7 +27,7 @@ export class QuizComponent {
   constructor(private http: HttpClient, private router: Router) {}
 
   submitQuiz() {
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem('jwt');
     if (!token) {
       console.error("Impossible d'envoyer le quiz sans token");
       return;

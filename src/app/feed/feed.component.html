@@ -1,0 +1,23 @@
+<div class="feed-container">
+    <!-- 🔝 En-tête + Actions -->
+    <div class="feed-header">
+      <h1>📰 My Feed</h1>
+      <p>Based on your latest diagnosis and quiz</p>
+  
+      <div class="feed-actions">
+        <button class="back-btn" (click)="goToChat()">💬 Back to Chat</button>
+        <button class="logout-btn" (click)="logout()">🚪 Logout</button>
+      </div>
+    </div>
+  
+    <div class="feed-grid">
+        <div class="article-card" *ngFor="let article of articles">
+          <h2>{{ article.title }}</h2>
+          <p [innerHTML]="article.summary"></p>
+          <div class="read-more">
+            <a [href]="article.link" target="_blank" rel="noopener">Read more →</a>
+          </div>
+        </div>
+      </div>
+      
+      

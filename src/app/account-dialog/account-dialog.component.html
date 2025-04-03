@@ -1,0 +1,20 @@
+<div class="account-dialog">
+    <h2><i class="fa fa-user-circle"></i> Account Info</h2>
+  
+    <div class="info-group">
+      <strong>Username:</strong> <span>{{ data?.username }}</span>
+    </div>
+  
+    <div class="info-group">
+      <strong>Email:</strong> <span>{{ data?.email || '—' }}</span>
+    </div>
+  
+    <div class="info-group">
+      <strong>Age:</strong> <span>{{ data?.age || 'Not provided' }}</span>
+    </div>
+  
+    <a class="report-link" href="http://127.0.0.1:5000/account/report" target="_blank" rel="noopener">
+      <i class="fa fa-file-pdf"></i> Download Emotional Report
+    </a>
+  </div>
+  
