@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ChatService {
-  private BASE_URL = 'http://127.0.0.1:5000'; // ✅ À adapter si tu passes en prod
+  private BASE_URL = 'http://127.0.0.1:5000';
 
   constructor(private http: HttpClient) {}
 
@@ -19,21 +19,14 @@ export class ChatService {
     });
   }
 
-  /** ✅ Envoie les réponses pour générer des questions personnalisées */
-  generateQuestions(responses: string[]): Observable<any> {
+  /** 🧠 Envoie un message utilisateur pour obtenir une réponse du bot */
+  sendMessage(message: string, finalize: boolean = false): Observable<any> {
     return this.http.post<any>(
-      `${this.BASE_URL}/generate_questions`,
-      { responses: responses }, // 👈 bien encapsulé dans un objet
+      `${this.BASE_URL}/chat`,
+      { message, finalize },
       { headers: this.getAuthHeaders() }
     );
   }
 
-  /** ✅ Envoie les réponses finales pour analyse */
-  analyzeResponses(responses: string[]): Observable<any> {
-    return this.http.post<any>(
-      `${this.BASE_URL}/chat`,
-      { responses: responses },
-      { headers: this.getAuthHeaders() }
-    );
-  }
+  
 }

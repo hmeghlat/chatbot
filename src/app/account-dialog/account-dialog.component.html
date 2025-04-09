@@ -1,20 +1,60 @@
 <div class="account-dialog">
-    <h2><i class="fa fa-user-circle"></i> Account Info</h2>
-  
+  <h2><i class="fa fa-user-circle"></i> Account Info</h2>
+
+  <form *ngIf="isEditing" (ngSubmit)="updateAccount()" #accountForm="ngForm">
     <div class="info-group">
-      <strong>Username:</strong> <span>{{ data?.username }}</span>
+      <label for="username"><strong>Username:</strong></label>
+      <input id="username" name="username" [(ngModel)]="updatedAccount.username" disabled />
     </div>
-  
+
     <div class="info-group">
-      <strong>Email:</strong> <span>{{ data?.email || '—' }}</span>
+      <label for="age"><strong>Age:</strong></label>
+      <input id="age" name="age" type="number" [(ngModel)]="updatedAccount.age" />
     </div>
-  
+
     <div class="info-group">
-      <strong>Age:</strong> <span>{{ data?.age || 'Not provided' }}</span>
+      <label><strong>Gender:</strong></label>
+      <span>{{ updatedAccount.gender || '—' }}</span>
     </div>
-  
-    <a class="report-link" href="http://127.0.0.1:5000/account/report" target="_blank" rel="noopener">
-      <i class="fa fa-file-pdf"></i> Download Emotional Report
-    </a>
+
+    <div class="info-group">
+      <label for="currentPassword"><strong>Current Password:</strong></label>
+      <input id="currentPassword" name="currentPassword" type="password" [(ngModel)]="updatedAccount.currentPassword" />
+    </div>
+
+    <div class="info-group">
+      <label for="newPassword"><strong>New Password:</strong></label>
+      <input id="newPassword" name="newPassword" type="password" [(ngModel)]="updatedAccount.newPassword" />
+    </div>
+
+    <div class="info-group">
+      <label for="confirmPassword"><strong>Confirm Password:</strong></label>
+      <input id="confirmPassword" name="confirmPassword" type="password" [(ngModel)]="confirmPassword" />
+    </div>
+
+    <div class="actions">
+      <button type="submit">💾 Save</button>
+      <button type="button" (click)="cancelEdit()">✖ Cancel</button>
+    </div>
+  </form>
+
+  <div *ngIf="!isEditing" class="display-info">
+    <div class="info-group">
+      <strong>Username:</strong> <span>{{ updatedAccount.username }}</span>
+    </div>
+    <div class="info-group">
+      <strong>Age:</strong> <span>{{ updatedAccount.age || 'Not provided' }}</span>
+    </div>
+    <div class="info-group">
+      <strong>Gender:</strong> <span>{{ updatedAccount.gender || '—' }}</span>
+    </div>
+
+    <div class="actions">
+      <button type="button" (click)="isEditing = true">✏️ Modify My Info</button>
+    </div>
   </div>
-  
+
+  <a class="report-link" href="http://127.0.0.1:5000/account/report" target="_blank" rel="noopener">
+    <i class="fa fa-file-pdf"></i> Download Emotional Report
+  </a>
+</div>

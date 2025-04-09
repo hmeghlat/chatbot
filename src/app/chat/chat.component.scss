@@ -1,5 +1,6 @@
 /* 🌍 Conteneur Principal */
 .chat-container {
+  font-family: 'Nunito', sans-serif;
   display: flex;
   height: 100vh;
   overflow: hidden;
@@ -37,13 +38,6 @@
   }
 }
 
-.search-bar {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-}
 
 .chat-history {
   margin-top: 20px;

@@ -1,23 +1,57 @@
+<!-- 🔝 Navbar identique au chat -->
+<nav class="chat-navbar">
+  <div class="chat-navbar-left">
+    <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo" />
+    <span class="chat-brand">
+      <h1 class="gradient-text">MindHorizon</h1>
+    </span>
+    <span class="chat-subtitle">My feed</span>
+  </div>
+
+  <div class="chat-navbar-right">
+    <button (click)="goToChat()">
+      <i class="fa fa-message"></i> Back to Chat
+    </button>
+  </div>
+</nav>
+
+<!-- 💡 Feed content -->
 <div class="feed-container">
-    <!-- 🔝 En-tête + Actions -->
-    <div class="feed-header">
-      <h1>📰 My Feed</h1>
-      <p>Based on your latest diagnosis and quiz</p>
-  
-      <div class="feed-actions">
-        <button class="back-btn" (click)="goToChat()">💬 Back to Chat</button>
-        <button class="logout-btn" (click)="logout()">🚪 Logout</button>
+  <!-- 🔄 Shimmer Loader -->
+  <div class="shimmer-grid" *ngIf="loading">
+    <div class="shimmer-card" *ngFor="let i of [1,2,3,4,5,6]"></div>
+  </div>
+
+  <!-- ❌ Erreur -->
+  <div *ngIf="!loading && error" class="error">{{ error }}</div>
+
+  <!-- 📰 Articles paginés -->
+  <div class="feed-grid" *ngIf="!loading && !error && articles.length">
+    <div class="article-card" *ngFor="let article of paginatedArticles">
+      <h2>{{ article.title }}</h2>
+      <p [innerHTML]="article.summary"></p>
+      <div class="read-more">
+        <a [href]="article.link" target="_blank" rel="noopener">Read more →</a>
       </div>
     </div>
-  
-    <div class="feed-grid">
-        <div class="article-card" *ngFor="let article of articles">
-          <h2>{{ article.title }}</h2>
-          <p [innerHTML]="article.summary"></p>
-          <div class="read-more">
-            <a [href]="article.link" target="_blank" rel="noopener">Read more →</a>
-          </div>
-        </div>
-      </div>
-      
-      
+  </div>
+
+  <!-- 💤 Aucun article -->
+  <div *ngIf="!loading && !error && articles.length === 0" class="empty-state">
+    <p>No articles found based on your latest data.</p>
+  </div>
+
+  <!-- 📄 Pagination -->
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">← Prev</button>
+
+    <button 
+      *ngFor="let page of [].constructor(totalPages); let i = index"
+      [class.active]="currentPage === i + 1"
+      (click)="goToPage(i + 1)">
+      {{ i + 1 }}
+    </button>
+
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Next →</button>
+  </div>
+</div>

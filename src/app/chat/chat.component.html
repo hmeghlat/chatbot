@@ -24,7 +24,7 @@
   <!-- Main Chat -->
   <section class="chat-main">
     <div class="chat-header">
-      <h2>MindHorizon</h2>
+      <h2>Hori chatbot</h2>
       <div class="chat-actions">
         <button class="logout-btn" (click)="logout()">🚪 Logout</button>
         <button class="account-btn" (click)="openAccountDialog()">👤 Account</button>
@@ -50,14 +50,20 @@
       </div>
     </div>
 
-    <!-- 📩 Entrée utilisateur -->
     <div class="chat-input">
-      <input type="text" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" placeholder="Message @Hori" />
+      <input 
+        type="text" 
+        [(ngModel)]="newMessage" 
+        (keyup.enter)="sendMessage()" 
+        placeholder="Message @Hori"
+        [disabled]="conversationFinalized || typing"
+      />
+    
       <div class="chat-icons">
-        <button (click)="sendMessage()">📨</button>
-        <button>😊</button>
-        <button>🎤</button>
+        <button (click)="sendMessage()" [disabled]="conversationFinalized || typing">📨</button>
+        <button (click)="finalizeConversation()" [disabled]="conversationFinalized || typing">✅ Finalize</button>
+        <button disabled>😊</button>
+        <button disabled>🎤</button>
       </div>
     </div>
-  </section>
-</div>
+    

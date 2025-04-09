@@ -1,11 +1,11 @@
-
-  .account-dialog {
+.account-dialog {
     background-color: var(--card-bg);
     color: var(--text-color);
     border-radius: 20px;
     padding: 30px;
-    width: 320px;
-    box-shadow: 0 10px 30px var(--shadow);
+    width: 400px;
+    max-width: 90vw;
+    box-shadow: 0 8px 24px var(--shadow);
     font-family: 'Nunito', sans-serif;
     text-align: left;
   
@@ -15,7 +15,6 @@
       font-size: 22px;
       font-weight: bold;
       margin-bottom: 25px;
-      color: var(--text-color);
   
       i {
         margin-right: 10px;
@@ -25,19 +24,52 @@
     }
   
     .info-group {
-      margin-bottom: 15px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
       font-size: 16px;
   
-      strong {
-        color: var(--text-color);
+      label, strong {
         font-weight: 600;
+      }
+  
+      input {
+        flex: 1;
+        margin-left: 10px;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 14px;
+        background-color: var(--card-bg);
+        color: var(--text-color);
       }
   
       span {
         color: var(--accent-color);
         font-weight: 500;
+      }
+    }
+  
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 20px;
+  
+      button {
+        padding: 10px;
+        background-color: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        flex: 1;
+  
+        &:hover {
+          background-color: var(--hover-accent-color);
+        }
       }
     }
   
@@ -49,31 +81,25 @@
       font-weight: bold;
       font-size: 15px;
       color: var(--text-color);
-      transition: color 0.3s ease;
   
       i {
         margin-right: 8px;
-        font-size: 18px;
         color: var(--accent-color);
       }
   
       &:hover {
         color: var(--accent-color);
         text-decoration: underline;
-  
-        i {
-          color: var(--accent-color);
-        }
       }
     }
   }
   
-  /* 🌗 Mode clair & sombre cohérents */
   @media (prefers-color-scheme: light) {
     :host {
       --card-bg: #f9faff;
       --text-color: #222;
       --accent-color: #90c4f2;
+      --hover-accent-color: #70b6ee;
       --shadow: rgba(0, 0, 0, 0.08);
     }
   }
@@ -83,6 +109,7 @@
       --card-bg: #2a2a40;
       --text-color: #f2f2f2;
       --accent-color: #a6d1f7;
+      --hover-accent-color: #82bce9;
       --shadow: rgba(0, 0, 0, 0.3);
     }
   }

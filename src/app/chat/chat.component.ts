@@ -9,16 +9,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { AccountDialogComponent } from '../account-dialog/account-dialog.component';
 import { HttpClient } from '@angular/common/http';
 
-
-
 @Component({
   selector: 'app-chat',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MarkdownModule, // ✅ Ajouté pour MarkdownService
-  ],
+  imports: [CommonModule, FormsModule, MarkdownModule],
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss'],
   animations: [
@@ -33,90 +27,77 @@ import { HttpClient } from '@angular/common/http';
 export class ChatComponent implements AfterViewInit {
   messages: { text: string, sender: 'bot' | 'user' }[] = [];
   newMessage: string = '';
-  responses: string[] = [];
-  phase = 1;
-  generatedQuestions: string[] = [];
   typing = false;
+  conversationFinalized = false;
 
   @ViewChild('chatMessages') chatMessagesRef!: ElementRef;
 
-  constructor(private chatService: ChatService,private router: Router,private dialog: MatDialog, private http: HttpClient) {}
-
-  goToFeed() {
-    this.router.navigate(['/feed']);
-  }
+  constructor(
+    private chatService: ChatService,
+    private router: Router,
+    private dialog: MatDialog,
+    private http: HttpClient
+  ) {}
 
   ngAfterViewInit(): void {
     this.appendBotMessage("Hello! How have you been feeling lately?");
   }
 
-  sendMessage() {
+  goToFeed() {
+    this.router.navigate(['/feed']);
+  }
+
+  sendMessage(finalize: boolean = false) {
     const text = this.newMessage.trim();
-    if (!text) return;
+    if (!text || this.conversationFinalized) return;
 
     this.appendUserMessage(text);
-    this.responses.push(text);
     this.newMessage = '';
-
-    if (this.phase === 1) {
-      if (this.responses.length === 1) {
-        setTimeout(() => this.appendBotMessage("Do you have trouble sleeping?"), 1000);
-      } else {
-        this.generateQuestions();
-      }
-    } else if (this.phase === 2) {
-      if (this.responses.length >= 5) {
-        this.analyzeResponses();
-      } else {
-        const nextQuestion = this.generatedQuestions[this.responses.length - 2];
-        setTimeout(() => this.appendBotMessage(nextQuestion), 1000);
-      }
-    }
-  }
-
-  private generateQuestions() {
     this.setTyping(true);
-    this.chatService.generateQuestions(this.responses).subscribe({
+
+    this.chatService.sendMessage(text, finalize).subscribe({
       next: (res: any) => {
         this.setTyping(false);
-        if (res.questions?.length) {
-          this.generatedQuestions = res.questions;
-          this.phase = 2;
-          setTimeout(() => this.appendBotMessage(this.generatedQuestions[0]), 1000);
+        if (res.response) {
+          this.appendBotMessage(res.response);
+          if (res.final === true) {
+            this.conversationFinalized = true;
+          }
         } else {
-          this.appendBotMessage("❌ Error generating questions.");
+          this.appendBotMessage("🤖 Sorry, I couldn't generate a response.");
         }
       },
       error: () => {
         this.setTyping(false);
-        this.appendBotMessage("❌ Server error while generating questions.");
+        this.appendBotMessage("❌ Server error while processing your message.");
       }
     });
   }
 
-  private analyzeResponses() {
+  finalizeConversation() {
+    const lastUserMessage = [...this.messages].reverse().find(msg => msg.sender === 'user');
+    if (!lastUserMessage || this.conversationFinalized) return;
+  
     this.setTyping(true);
-    this.chatService.analyzeResponses(this.responses).subscribe({
+    this.chatService.sendMessage(lastUserMessage.text, true).subscribe({
       next: (res: any) => {
         this.setTyping(false);
-        if (res.diagnosis && res.deepseek_response) {
-          this.appendBotMessage(`🧠 **Diagnosis:** ${res.diagnosis}`);
-          setTimeout(() => this.appendBotMessage(`🤖 ${res.deepseek_response}`), 1000);
+        if (res.response) {
+          this.appendBotMessage(res.response);
+          if (res.final === true) {
+            this.conversationFinalized = true;
+          }
         } else {
-          this.appendBotMessage("❌ Error: Missing data from the analysis.");
+          this.appendBotMessage("🤖 Sorry, I couldn't finalize the conversation.");
         }
       },
       error: () => {
         this.setTyping(false);
-        this.appendBotMessage("❌ Server error while analyzing responses.");
+        this.appendBotMessage("❌ Server error while finalizing.");
       }
     });
   }
-
-  logout() {
-    localStorage.removeItem('jwt'); // 🔐 Supprimer le token
-    this.router.navigate(['/login']); // 🚪 Rediriger vers login
-  }
+  
 
   private appendBotMessage(text: string) {
     this.messages.push({ text, sender: 'bot' });
@@ -141,10 +122,15 @@ export class ChatComponent implements AfterViewInit {
     }, 100);
   }
 
+  logout() {
+    localStorage.removeItem('jwt');
+    this.router.navigate(['/login']);
+  }
+
   openAccountDialog() {
     const token = localStorage.getItem('jwt');
     if (!token) return;
-  
+
     this.http.get<any>('http://127.0.0.1:5000/account', {
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe({
@@ -158,5 +144,4 @@ export class ChatComponent implements AfterViewInit {
       }
     });
   }
-  
 }
