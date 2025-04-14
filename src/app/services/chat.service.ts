@@ -27,6 +27,21 @@ export class ChatService {
       { headers: this.getAuthHeaders() }
     );
   }
+/** 🔁 Liste les conversations de l'utilisateur */
+getConversations(): Observable<any> {
+  return this.http.get<any>(
+    `${this.BASE_URL}/conversations`,
+    { headers: this.getAuthHeaders() }
+  );
+}
+
+/** 📄 Récupère le détail d'une conversation */
+getConversationById(convId: string): Observable<any> {
+  return this.http.get<any>(
+    `${this.BASE_URL}/conversations/${convId}`,
+    { headers: this.getAuthHeaders() }
+  );
+}
 
   
 }

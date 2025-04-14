@@ -23,12 +23,17 @@ import { HttpClient } from '@angular/common/http';
       ])
     ])
   ]
+
 })
 export class ChatComponent implements AfterViewInit {
   messages: { text: string, sender: 'bot' | 'user' }[] = [];
   newMessage: string = '';
   typing = false;
   conversationFinalized = false;
+  viewingArchived = false;
+
+  conversationList: { conversation_id: string, timestamp: string, title?: string }[] = [];
+  selectedConversationId: string | null = null;
 
   @ViewChild('chatMessages') chatMessagesRef!: ElementRef;
 
@@ -40,11 +45,23 @@ export class ChatComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit(): void {
+    this.loadConversations();
     this.appendBotMessage("Hello! How have you been feeling lately?");
   }
 
   goToFeed() {
     this.router.navigate(['/feed']);
+  }
+
+  startNewChat() {
+    this.messages = [];
+    this.newMessage = '';
+    this.typing = false;
+    this.conversationFinalized = false;
+    this.viewingArchived = false;
+    this.selectedConversationId = null;
+
+    this.appendBotMessage("Hello! How have you been feeling lately?");
   }
 
   sendMessage(finalize: boolean = false) {
@@ -77,7 +94,7 @@ export class ChatComponent implements AfterViewInit {
   finalizeConversation() {
     const lastUserMessage = [...this.messages].reverse().find(msg => msg.sender === 'user');
     if (!lastUserMessage || this.conversationFinalized) return;
-  
+
     this.setTyping(true);
     this.chatService.sendMessage(lastUserMessage.text, true).subscribe({
       next: (res: any) => {
@@ -97,7 +114,6 @@ export class ChatComponent implements AfterViewInit {
       }
     });
   }
-  
 
   private appendBotMessage(text: string) {
     this.messages.push({ text, sender: 'bot' });
@@ -143,5 +159,34 @@ export class ChatComponent implements AfterViewInit {
         console.error('Failed to fetch account info:', err);
       }
     });
+  }
+
+  loadConversations() {
+    this.chatService.getConversations().subscribe({
+      next: (list) => this.conversationList = list,
+      error: () => console.error("❌ Unable to fetch conversation history.")
+    });
+  }
+
+  viewConversation(convId: string) {
+    this.chatService.getConversationById(convId).subscribe({
+      next: (conv) => {
+        this.messages = conv.messages;
+        this.viewingArchived = true;
+        this.selectedConversationId = convId;
+        this.scrollToBottom();
+      },
+      error: () => console.error("❌ Unable to load conversation.")
+    });
+  }
+
+  exitArchivedView() {
+    this.messages = [];
+    this.viewingArchived = false;
+    this.conversationFinalized = false;
+    this.newMessage = '';
+    this.selectedConversationId = null;
+
+    this.appendBotMessage("Hello! How have you been feeling lately?");
   }
 }

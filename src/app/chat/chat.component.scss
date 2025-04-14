@@ -29,6 +29,7 @@
 
   h1 {
     font-size: 24px;
+    margin: 0%;
     font-weight: bold;
     background: linear-gradient(to right, #ddade6, #90c4f2);
     -webkit-background-clip: text;
@@ -38,29 +39,66 @@
   }
 }
 
+/* 🧭 Boutons Feed + New Chat */
+.feed-btn,
+.new-chat-btn {
+  padding: 10px;
+  border: none;
+  background: linear-gradient(to right, #ddade6, #90c4f2);
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s ease;
+  width: 100%;
 
+  &:hover {
+    background: linear-gradient(to right, #c89bd6, #79b6eb);
+  }
+}
+
+/* 📜 Historique sans sections */
 .chat-history {
   margin-top: 20px;
+  flex: 1;
+  overflow-y: auto;
 
-  h3 {
-    font-size: 14px;
-    color: #888;
-    margin-bottom: 5px;
-  }
-
-  p {
-    padding: 8px;
-    margin: 5px 0;
+  .conversation-item {
+    padding: 12px 14px;
+    margin-bottom: 12px;
     background: #f5f5f5;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
+    transition: background 0.3s ease;
+    font-size: 15px;
+  
+    &:hover {
+      background: #ebebeb;
+    }
+  
+    &.active {
+      background: #dceeff;
+      font-weight: bold;
+    }
+  
+    .conv-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+  
+    .conv-date {
+      font-size: 12px;
+      color: #777;
+    }
   }
 }
 
 .sidebar-footer {
-  margin-top: auto;
   display: flex;
   justify-content: space-between;
+  margin-top: auto;
 
   button {
     border: none;
@@ -231,23 +269,6 @@ markdown {
     transform: translateY(0);
   }
 }
-
-.feed-btn {
-  padding: 10px;
-  border: none;
-  background: linear-gradient(to right, #ddade6, #90c4f2);
-  color: white;
-  font-weight: bold;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: background 0.3s ease;
-
-  &:hover {
-    background: linear-gradient(to right, #c89bd6, #79b6eb);
-  }
-}
-
 
 .logout-btn {
   background: none;

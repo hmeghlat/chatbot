@@ -5,16 +5,28 @@
       <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo" />
       <h1 class="gradient-text">MindHorizon</h1>
     </div>
-    <button class="feed-btn" (click)="goToFeed()">📚 My Feed</button>
-    <div class="chat-history">
-      <h3>Today</h3>
-      <p>Let's talk about mental health</p>
-      <p>Let's talk about mental health</p>
 
-      <h3>Yesterday</h3>
-      <p>Let's talk about mental health</p>
-      <p>Let's talk about mental health</p>
+    <button class="feed-btn" (click)="goToFeed()">📚 My Feed</button>
+    <button class="new-chat-btn" (click)="startNewChat()">➕ New Chat</button>
+
+    <div class="chat-history">
+      <div
+        *ngFor="let conv of conversationList"
+        class="conversation-item"
+        [class.active]="conv.conversation_id === selectedConversationId"
+        (click)="viewConversation(conv.conversation_id)">
+        
+        <div class="conv-title">
+          {{ conv.title || 'Untitled conversation' }}
+        </div>
+        
+        <div class="conv-date">
+          {{ conv.timestamp | date:'dd MMMM yyyy, HH:mm' }}
+        </div>
+      </div>
     </div>
+    
+
     <div class="sidebar-footer">
       <button class="settings-btn">⚙ Settings</button>
       <button class="about-btn">ℹ About</button>
@@ -28,37 +40,36 @@
       <div class="chat-actions">
         <button class="logout-btn" (click)="logout()">🚪 Logout</button>
         <button class="account-btn" (click)="openAccountDialog()">👤 Account</button>
-
       </div>
     </div>
 
-    <!-- 💬 Zone des messages -->
+    <!-- 💬 Messages -->
     <div class="chat-messages" #chatMessages>
       <div *ngFor="let msg of messages"
            [ngClass]="{ 'message': true, 'bot-message': msg.sender === 'bot', 'user-message': msg.sender === 'user' }"
            [@fadeIn]>
         <img *ngIf="msg.sender === 'bot'" src="assets/hori.jpg" alt="Hori" />
-        <!-- Markdown rendu -->
         <markdown *ngIf="msg.sender === 'bot'" [data]="msg.text"></markdown>
         <p *ngIf="msg.sender === 'user'">{{ msg.text }}</p>
       </div>
 
-      <!-- ✨ Effet de saisie -->
+      <!-- ✨ Typing indicator -->
       <div class="typing-indicator" *ngIf="typing">
         <img src="assets/hori.jpg" alt="Hori typing" />
         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
       </div>
     </div>
 
+    <!-- 📩 Chat Input -->
     <div class="chat-input">
       <input 
         type="text" 
         [(ngModel)]="newMessage" 
         (keyup.enter)="sendMessage()" 
         placeholder="Message @Hori"
-        [disabled]="conversationFinalized || typing"
+        [disabled]="conversationFinalized || typing || viewingArchived"
       />
-    
+
       <div class="chat-icons">
         <button (click)="sendMessage()" [disabled]="conversationFinalized || typing">📨</button>
         <button (click)="finalizeConversation()" [disabled]="conversationFinalized || typing">✅ Finalize</button>
@@ -66,4 +77,5 @@
         <button disabled>🎤</button>
       </div>
     </div>
-    
+  </section>
+</div>
