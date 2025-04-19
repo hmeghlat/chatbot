@@ -1,62 +1,78 @@
-<!-- 🌍 Conteneur global de la page -->
 <div class="page-wrapper">
-  <!-- 🌅 Navigation entre Login et Sign Up -->
+  <!-- Navigation -->
   <div class="auth-switch" *ngIf="!showQuiz">
     <button class="switch-btn" [class.active]="isLoginActive" (click)="toggleForm(true)">Login</button>
     <button class="switch-btn" [class.active]="!isLoginActive" (click)="toggleForm(false)">Sign Up</button>
   </div>
 
-  <!-- 📦 Conteneur principal -->
+  <!-- Formulaires -->
   <div class="auth-container" *ngIf="!showQuiz">
-    <!-- Formulaire de Connexion -->
-    <div class="login-box" *ngIf="isLoginActive" [class.active]="isLoginActive">
+
+    <!-- Formulaire Login -->
+    <div class="login-box" *ngIf="isLoginActive">
       <div class="logo">
         <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo">
       </div>
       <h1 class="gradient-text">MindHorizon</h1>
       <p class="subtitle">Your AI companion for mental health</p>
-
-      <!-- Message d'erreur -->
       <p class="auth-message" *ngIf="authMessage">{{ authMessage }}</p>
 
       <form (submit)="onLogin(); $event.preventDefault()">
         <div class="input-group">
           <label for="username">User Name</label>
-          <input type="text" id="username" name="username" placeholder="Enter your username" [(ngModel)]="username" required>
+          <input type="text" id="username" name="username" [(ngModel)]="username" required>
         </div>
         <div class="input-group">
           <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="Enter your password" [(ngModel)]="password" required>
+          <input type="password" id="password" name="password" [(ngModel)]="password" required>
         </div>
         <button type="submit" class="auth-btn">Log in</button>
       </form>
     </div>
 
-    <!-- Formulaire d'inscription -->
-    <div class="login-box" *ngIf="!isLoginActive" [class.active]="!isLoginActive">
+    <!-- Formulaire SignUp -->
+    <div class="login-box" *ngIf="!isLoginActive">
       <div class="logo">
         <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo">
       </div>
       <h1 class="gradient-text">MindHorizon</h1>
       <p class="subtitle">Join us now</p>
-
-      <!-- Message d'erreur -->
       <p class="auth-message" *ngIf="authMessage">{{ authMessage }}</p>
 
-      <form (submit)="onSignup(); $event.preventDefault()">
+      <form (submit)="initiateSignup(); $event.preventDefault()">
         <div class="input-group">
           <label for="username-signup">User Name</label>
-          <input type="text" id="username-signup" name="username-signup" placeholder="Enter your username" [(ngModel)]="username" required>
+          <input type="text" id="username-signup" [(ngModel)]="username" name="username-signup" required>
         </div>
         <div class="input-group">
           <label for="password-signup">Password</label>
-          <input type="password" id="password-signup" name="password-signup" placeholder="Enter your password" [(ngModel)]="passwordSignup" required>
+          <input type="password" id="password-signup" [(ngModel)]="passwordSignup" name="password-signup" required>
         </div>
+
+        <!-- Politique de confidentialité -->
+        <div class="privacy-policy-container">
+          <label class="checkbox-container">
+            <input type="checkbox" [(ngModel)]="acceptedPolicy" name="privacy-policy" required>
+            <span class="checkmark"></span>
+            <span class="checkbox-label">I agree to the </span>
+          </label>
+          <button type="button" class="policy-link-btn" (click)="viewPrivacyPolicy()">
+            <span class="policy-text">Privacy Policy</span>
+            <span class="policy-icon">📋</span>
+          </button>
+        </div>
+
         <button type="submit" class="auth-btn">Sign up</button>
       </form>
     </div>
   </div>
 
-  <!-- 🌟 Affichage du Quiz -->
+  <!-- Quiz -->
   <app-quiz *ngIf="showQuiz"></app-quiz>
+
+  <!-- Politique -->
+  <app-confidentiality-dialog 
+    *ngIf="showConfidentialityPolicy"
+    (accepted)="onConfidentialityResponse($event)">
+  </app-confidentiality-dialog>
 </div>

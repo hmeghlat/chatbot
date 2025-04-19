@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
+import { CookieService } from 'ngx-cookie-service';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-  constructor(private router: Router) {}
+  constructor(private router: Router, private cookieService: CookieService) {}
+
 
   canActivate(): boolean {
     // Utilisation de la clé "jwt" pour récupérer le token
-    const token = localStorage.getItem('jwt');
+    const token = this.cookieService.get('jwt');
 
     if (token && !this.isTokenExpired(token)) {
       return true;

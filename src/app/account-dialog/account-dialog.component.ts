@@ -1,8 +1,10 @@
 import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { MatDialogModule } from '@angular/material/dialog';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-account-dialog',
@@ -13,6 +15,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class AccountDialogComponent {
   isEditing = false;
+  showPasswordFields = false;
   confirmPassword = '';
 
   updatedAccount = {
@@ -26,7 +29,8 @@ export class AccountDialogComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private http: HttpClient,
-    private dialogRef: MatDialogRef<AccountDialogComponent>
+    private dialogRef: MatDialogRef<AccountDialogComponent>,
+    private cookieService: CookieService
   ) {
     this.updatedAccount.username = data.username;
     this.updatedAccount.age = data.age;
@@ -34,12 +38,12 @@ export class AccountDialogComponent {
   }
 
   updateAccount() {
-    if (this.updatedAccount.newPassword && this.updatedAccount.newPassword !== this.confirmPassword) {
+    if (this.showPasswordFields && this.updatedAccount.newPassword !== this.confirmPassword) {
       alert('❌ Passwords do not match!');
       return;
     }
 
-    const token = localStorage.getItem('jwt');
+    const token = this.cookieService.get('jwt');
     if (!token) return;
 
     const headers = new HttpHeaders({
@@ -48,10 +52,9 @@ export class AccountDialogComponent {
     });
 
     const payload: any = {};
-
-    // Ajouter uniquement les champs acceptés par le backend
     if (this.updatedAccount.age) payload.new_age = this.updatedAccount.age;
-    if (this.updatedAccount.currentPassword && this.updatedAccount.newPassword) {
+
+    if (this.showPasswordFields) {
       payload.current_password = this.updatedAccount.currentPassword;
       payload.new_password = this.updatedAccount.newPassword;
     }
@@ -70,11 +73,23 @@ export class AccountDialogComponent {
 
   cancelEdit() {
     this.isEditing = false;
-    this.updatedAccount.username = this.data.username;
-    this.updatedAccount.age = this.data.age;
-    this.updatedAccount.gender = this.data.gender;
-    this.updatedAccount.currentPassword = '';
-    this.updatedAccount.newPassword = '';
+    this.showPasswordFields = false;
+    this.updatedAccount = {
+      username: this.data.username,
+      age: this.data.age,
+      gender: this.data.gender,
+      currentPassword: '',
+      newPassword: ''
+    };
     this.confirmPassword = '';
+  }
+
+  togglePasswordFields() {
+    this.showPasswordFields = !this.showPasswordFields;
+    if (!this.showPasswordFields) {
+      this.updatedAccount.currentPassword = '';
+      this.updatedAccount.newPassword = '';
+      this.confirmPassword = '';
+    }
   }
 }

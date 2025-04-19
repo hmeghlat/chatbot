@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { trigger, style, animate, transition } from '@angular/animations';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
   imports: [CommonModule],
+  providers: [CookieService],
   templateUrl: './feed.component.html',
   styleUrls: ['./feed.component.scss'],
   animations: [
@@ -21,7 +23,7 @@ import { trigger, style, animate, transition } from '@angular/animations';
   ]
 })
 export class FeedComponent implements OnInit {
-  articles: { title: string, summary: SafeHtml, link: string }[] = [];
+  articles: { title: string, summary: SafeHtml, link: string, image?: string }[] = [];
   loading = true;
   error: string = '';
   currentPage = 1;
@@ -30,29 +32,31 @@ export class FeedComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private cookieService: CookieService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    const token = localStorage.getItem('jwt');
+    const token = this.cookieService.get('jwt');
     if (!token) {
       this.error = "🔒 You are not authenticated.";
       this.loading = false;
       return;
     }
 
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
 
     this.http.get<any>('http://127.0.0.1:5000/feeds', { headers }).subscribe({
       next: (res) => {
         this.articles = (res.articles || []).map((article: any) => ({
           title: article.title || 'Untitled',
           link: article.link || '#',
-          summary: this.cleanAndSanitizeSummary(article.summary)
+          summary: this.cleanAndSanitizeSummary(article.summary),
+          image: article.image || null
         }));
         this.loading = false;
+        this.cdr.detectChanges(); // évite NG0100 si tu as un *ngIf
       },
       error: (err) => {
         this.error = err.error?.error || '❌ Failed to load your feed.';
@@ -73,32 +77,32 @@ export class FeedComponent implements OnInit {
     return div.textContent || div.innerText || '';
   }
 
-  goToChat() {
-    this.router.navigate(['/chat']);
-  }
-
-  logout() {
-    localStorage.removeItem('jwt');
-    this.router.navigate(['/login']);
-  }
-
   get paginatedArticles() {
     const start = (this.currentPage - 1) * this.articlesPerPage;
     return this.articles.slice(start, start + this.articlesPerPage);
   }
-  
+
   get totalPages(): number {
     return Math.ceil(this.articles.length / this.articlesPerPage);
   }
-  
+
   goToPage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
-  goToAccount() {
-    this.router.navigate(['/chat']); 
+
+  goToChat() {
+    this.router.navigate(['/chat']);
   }
-  
+
+  logout() {
+    this.cookieService.delete('jwt');
+    this.router.navigate(['/login']);
+  }
+
+  goToAccount() {
+    this.router.navigate(['/chat']);
+  }
 }

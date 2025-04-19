@@ -7,6 +7,7 @@
     </div>
 
     <button class="feed-btn" (click)="goToFeed()">📚 My Feed</button>
+    <button class="reports-btn" (click)="goToReports()">📊 My Reports</button>
     <button class="new-chat-btn" (click)="startNewChat()">➕ New Chat</button>
 
     <div class="chat-history">
@@ -25,7 +26,6 @@
         </div>
       </div>
     </div>
-    
 
     <div class="sidebar-footer">
       <button class="settings-btn">⚙ Settings</button>
@@ -35,11 +35,15 @@
 
   <!-- Main Chat -->
   <section class="chat-main">
+    <!-- 💬 Chat Header -->
     <div class="chat-header">
       <h2>Hori chatbot</h2>
       <div class="chat-actions">
-        <button class="logout-btn" (click)="logout()">🚪 Logout</button>
         <button class="account-btn" (click)="openAccountDialog()">👤 Account</button>
+        <button class="account-btn" (click)="generateGeneralReport()" [disabled]="generatingReport">
+          {{ generatingReport ? '⏳ Generating...' : '📥 General Report' }}
+        </button>
+        <button class="logout-btn" (click)="logout()">🚪 Logout</button>
       </div>
     </div>
 
@@ -58,7 +62,28 @@
         <img src="assets/hori.jpg" alt="Hori typing" />
         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
       </div>
+
+      <!-- 📝 Archived conversation notice + report -->
+      <div class="archived-controls" *ngIf="viewingArchived">
+        <p>You are viewing an archived conversation.</p>
+        <div class="archived-actions">
+          <button class="return-btn" (click)="exitArchivedView()">🔄 Return to a new chat</button>
+          <button 
+            class="report-btn" 
+            (click)="generateConversationReport()" 
+            [disabled]="generatingReport">
+            {{ generatingReport ? '⏳ Generating...' : '📊 Report' }}
+          </button>
+        </div>
+      </div>
     </div>
+
+      <!-- 🧮 Word Counter -->
+    <div class="word-counter" [ngClass]="{ 'limit-reached': remainingWords === 0 }">
+      {{ remainingWords }} words remaining
+    </div>
+
+    
 
     <!-- 📩 Chat Input -->
     <div class="chat-input">
@@ -67,12 +92,13 @@
         [(ngModel)]="newMessage" 
         (keyup.enter)="sendMessage()" 
         placeholder="Message @Hori"
-        [disabled]="conversationFinalized || typing || viewingArchived"
+        [disabled]="conversationFinalized || typing || viewingArchived || remainingWords === 0"
       />
 
+
       <div class="chat-icons">
-        <button (click)="sendMessage()" [disabled]="conversationFinalized || typing">📨</button>
-        <button (click)="finalizeConversation()" [disabled]="conversationFinalized || typing">✅ Finalize</button>
+        <button (click)="sendMessage()" [disabled]="conversationFinalized || typing || viewingArchived">📨</button>
+        <button (click)="finalizeConversation()" [disabled]="conversationFinalized || typing || viewingArchived">✅ Finalize</button>
         <button disabled>😊</button>
         <button disabled>🎤</button>
       </div>

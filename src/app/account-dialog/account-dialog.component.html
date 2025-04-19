@@ -3,13 +3,13 @@
 
   <form *ngIf="isEditing" (ngSubmit)="updateAccount()" #accountForm="ngForm">
     <div class="info-group">
-      <label for="username"><strong>Username:</strong></label>
-      <input id="username" name="username" [(ngModel)]="updatedAccount.username" disabled />
+      <label><strong>Username:</strong></label>
+      <input [(ngModel)]="updatedAccount.username" name="username" disabled />
     </div>
 
     <div class="info-group">
-      <label for="age"><strong>Age:</strong></label>
-      <input id="age" name="age" type="number" [(ngModel)]="updatedAccount.age" />
+      <label><strong>Age:</strong></label>
+      <input type="number" [(ngModel)]="updatedAccount.age" name="age" />
     </div>
 
     <div class="info-group">
@@ -17,19 +17,23 @@
       <span>{{ updatedAccount.gender || '—' }}</span>
     </div>
 
-    <div class="info-group">
-      <label for="currentPassword"><strong>Current Password:</strong></label>
-      <input id="currentPassword" name="currentPassword" type="password" [(ngModel)]="updatedAccount.currentPassword" />
-    </div>
+    <button type="button" class="btn-password" (click)="togglePasswordFields()">
+      🔐 {{ showPasswordFields ? 'Cancel Password Change' : 'Modify Password' }}
+    </button>
 
-    <div class="info-group">
-      <label for="newPassword"><strong>New Password:</strong></label>
-      <input id="newPassword" name="newPassword" type="password" [(ngModel)]="updatedAccount.newPassword" />
-    </div>
-
-    <div class="info-group">
-      <label for="confirmPassword"><strong>Confirm Password:</strong></label>
-      <input id="confirmPassword" name="confirmPassword" type="password" [(ngModel)]="confirmPassword" />
+    <div *ngIf="showPasswordFields">
+      <div class="info-group">
+        <label><strong>Current Password:</strong></label>
+        <input type="password" [(ngModel)]="updatedAccount.currentPassword" name="currentPassword" />
+      </div>
+      <div class="info-group">
+        <label><strong>New Password:</strong></label>
+        <input type="password" [(ngModel)]="updatedAccount.newPassword" name="newPassword" />
+      </div>
+      <div class="info-group">
+        <label><strong>Confirm Password:</strong></label>
+        <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" />
+      </div>
     </div>
 
     <div class="actions">
@@ -39,22 +43,15 @@
   </form>
 
   <div *ngIf="!isEditing" class="display-info">
-    <div class="info-group">
-      <strong>Username:</strong> <span>{{ updatedAccount.username }}</span>
-    </div>
-    <div class="info-group">
-      <strong>Age:</strong> <span>{{ updatedAccount.age || 'Not provided' }}</span>
-    </div>
-    <div class="info-group">
-      <strong>Gender:</strong> <span>{{ updatedAccount.gender || '—' }}</span>
-    </div>
+    <div class="info-group"><strong>Username:</strong> {{ updatedAccount.username }}</div>
+    <div class="info-group"><strong>Age:</strong> {{ updatedAccount.age }}</div>
+    <div class="info-group"><strong>Gender:</strong> {{ updatedAccount.gender }}</div>
 
     <div class="actions">
-      <button type="button" (click)="isEditing = true">✏️ Modify My Info</button>
+      <button (click)="isEditing = true">✏️ Modify My Info</button>
+     
+     
     </div>
   </div>
 
-  <a class="report-link" href="http://127.0.0.1:5000/account/report" target="_blank" rel="noopener">
-    <i class="fa fa-file-pdf"></i> Download Emotional Report
-  </a>
 </div>

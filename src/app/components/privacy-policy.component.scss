@@ -1,0 +1,222 @@
+.confidentiality-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+  }
+  
+  .confidentiality-dialog {
+    background-color: white;
+    border-radius: 12px;
+    padding: 0;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease-out;
+    overflow: hidden;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .dialog-header {
+    padding: 25px 20px;
+    background: linear-gradient(135deg, #3f51b5, #7986cb);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+  }
+  
+  .logo {
+    height: 60px;
+    margin-bottom: 15px;
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  h2 {
+    margin: 0 0 8px 0;
+    font-size: 2rem;
+    color: white;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  
+  .subtitle {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1rem;
+    letter-spacing: 0.3px;
+  }
+  
+  .policy-content {
+    overflow-y: auto;
+    padding: 25px;
+    background-color: #f9f9f9;
+    flex: 1;
+    max-height: 50vh;
+    line-height: 1.7;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #eee;
+    color: #333;
+  }
+  
+  .agreement {
+    padding: 20px 25px;
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-left: 35px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 1rem;
+  }
+  
+  .checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  
+  .checkmark {
+    position: absolute;
+    left: 0;
+    height: 24px;
+    width: 24px;
+    background-color: #eee;
+    border-radius: 4px;
+    transition: all 0.2s;
+    border: 2px solid #ddd;
+  }
+  
+  .checkbox-container:hover input ~ .checkmark {
+    background-color: #ddd;
+    border-color: #ccc;
+  }
+  
+  .checkbox-container input:checked ~ .checkmark {
+    background-color: #4caf50;
+    border-color: #4caf50;
+  }
+  
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+  
+  .checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+  }
+  
+  .checkbox-container .checkmark:after {
+    left: 8px;
+    top: 4px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  
+  .label-text {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px 25px;
+    background-color: #fafafa;
+    border-radius: 0 0 12px 12px;
+  }
+  
+  button {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  
+  .accept-btn {
+    background-color: #4caf50;
+    color: white;
+    margin-right: 15px;
+    box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+  }
+  
+  .accept-btn:hover {
+    background-color: #388e3c;
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    transform: translateY(-2px);
+  }
+  
+  .accept-btn:disabled {
+    background-color: #c8e6c9;
+    color: #7cb342;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+  
+  .decline-btn {
+    background-color: #f44336;
+    color: white;
+    box-shadow: 0 3px 10px rgba(244, 67, 54, 0.3);
+  }
+  
+  .decline-btn:hover {
+    background-color: #d32f2f;
+    box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    .confidentiality-dialog {
+      width: 95%;
+      max-height: 95vh;
+    }
+    
+    .actions {
+      flex-direction: column;
+    }
+    
+    .accept-btn {
+      margin-right: 0;
+      margin-bottom: 10px;
+    }
+    
+    button {
+      width: 100%;
+    }
+  }

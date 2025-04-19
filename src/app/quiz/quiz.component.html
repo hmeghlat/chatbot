@@ -1,68 +1,100 @@
-<!-- 🌟 Formulaire de quiz -->
+<!-- 🌟 Quiz form -->
 <div class="quiz-wrapper">
-    <div class="quiz-box">
-      <div class="logo">
-        <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo">
-        <h2 class="quiz-title">WELCOME TO MINDHORIZON</h2>
-      </div>
-      <p class="quiz-subtitle">Before chatting with our AI, please answer a few questions:</p>
-  
-      <div class="input-group">
-        <label>Age:</label>
-        <input type="number" [(ngModel)]="quizData.age" placeholder="Enter your age" required>
-      </div>
-  
-      <div class="input-group">
-        <label>Gender:</label>
-        <select [(ngModel)]="quizData.gender" required>
-          <option value="" disabled selected>Select your gender</option>
-          <option value="male">I'm a Man</option>
-          <option value="female">I'm a Woman</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-  
-      <div class="input-group">
-        <label>How do you feel mentally today?</label>
-        <select [(ngModel)]="quizData.mental_state" required>
-          <option value="" disabled selected>Select an option</option>
-          <option value="well">I'm mentally well</option>
-          <option value="stressed">I'm stressed</option>
-          <option value="anxious">I'm anxious</option>
-        </select>
-      </div>
-  
-      <div class="input-group">
-        <label>How do you feel physically today?</label>
-        <select [(ngModel)]="quizData.physical_state" required>
-          <option value="" disabled selected>Select an option</option>
-          <option value="energetic">I'm Energetic</option>
-          <option value="tired">I'm Tired</option>
-          <option value="weak">I'm feeling weak</option>
-        </select>
-      </div>
-  
-      <div class="input-group">
-        <label>How stressed are you today?</label>
-        <select [(ngModel)]="quizData.stress_level" required>
-          <option value="" disabled selected>Select an option</option>
-          <option value="1">1 - I'm Very relaxed</option>
-          <option value="5">5 - I'm Moderately stressed</option>
-          <option value="10">10 - I'm Extremely stressed</option>
-        </select>
-      </div>
-  
-      <div class="input-group">
-        <label>What best describes your mood?</label>
-        <select [(ngModel)]="quizData.mood" required>
-          <option value="" disabled selected>Select an option</option>
-          <option value="happy">I'm Happy</option>
-          <option value="neutral">Neutral</option>
-          <option value="sad">I'm Sad</option>
-        </select>
-      </div>
-  
-      <button (click)="submitQuiz()" class="quiz-btn">SEND MY MOOD</button>
-    </div>
+  <!-- Success message when quiz already completed -->
+  <div class="quiz-box" *ngIf="quizCompleted">
+    <div class="success-icon">✓</div>
+    <h2>Quiz already completed today!</h2>
+    <p>Auto-redirecting to chat...</p>
   </div>
+
+  <!-- Quiz form -->
+  <div class="quiz-box" *ngIf="!quizCompleted">
+    <div class="logo">
+      <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo">
+      <h2 class="quiz-title">WELCOME TO MINDHORIZON</h2>
+    </div>
+    <p class="quiz-subtitle">Before chatting with our AI, please answer a few questions:</p>
+
+    <!-- Error message -->
+    <div class="error-message" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Message for users who have already completed a quiz -->
+    <div class="info-message" *ngIf="previousQuizCompleted">
+      <p>Your personal information has been retained from your previous quiz.</p>
+    </div>
+  
+    <!-- Age (displayed only for new users) -->
+    <div class="input-group" *ngIf="!previousQuizCompleted">
+      <label>Age:</label>
+      <input type="number" [(ngModel)]="quizData.age" min="10" max="100" placeholder="Enter your age (10-100)" required>
+    </div>
+  
+    <!-- Gender (displayed only for new users) -->
+    <div class="input-group" *ngIf="!previousQuizCompleted">
+      <label>Gender:</label>
+      <select [(ngModel)]="quizData.gender" required>
+        <option value="" disabled selected>Select your gender</option>
+        <option value="male">I'm a Man</option>
+        <option value="female">I'm a Woman</option>
+        <option value="other">Other gender</option>
+        <option value="prefer_not">Prefer not to say my gender</option>
+      </select>
+    </div>
+  
+    <div class="input-group">
+      <label>How do you feel mentally today?</label>
+      <select [(ngModel)]="quizData.mental_state" required>
+        <option value="" disabled selected>Select an option</option>
+        <option value="great">I'm mentally well</option>
+        <option value="good">I'm good</option>
+        <option value="okay">I'm Okay today</option>
+        <option value="bad">I'm bad</option>
+        <option value="awful">I'm awful</option>
+      </select>
+    </div>
+  
+    <div class="input-group">
+      <label>How do you feel physically today?</label>
+      <select [(ngModel)]="quizData.physical_state" required>
+        <option value="" disabled selected>Select an option</option>
+        <option value="energetic">I'm Energetic</option>
+        <option value="normal">I'm Normal</option>
+        <option value="tired">I'm Tired</option>
+        <option value="sick">I'm Sick</option>
+        <option value="exhausted">I'm Exhausted</option>
+      </select>
+    </div>
+  
+    <div class="input-group">
+      <label>How stressed are you today?</label>
+      <select [(ngModel)]="quizData.stress_level" required>
+        <option value="" disabled selected>Select an option</option>
+        <option value="1">1 - I'm Very relaxed</option>
+        <option value="2">2 - I'm Relaxed</option>
+        <option value="3">3 - I'm Slightly stressed</option>
+        <option value="4">4 - I'm Stressed</option>
+        <option value="5">5 - I'm Very stressed</option>
+      </select>
+    </div>
+  
+    <div class="input-group">
+      <label>What best describes your mood?</label>
+      <select [(ngModel)]="quizData.mood" required>
+        <option value="" disabled selected>Select an option</option>
+        <option value="happy">I'm Happy</option>
+        <option value="calm">I'm Calm</option>
+        <option value="neutral">I'm Neutral</option>
+        <option value="sad">I'm Sad</option>
+        <option value="angry">I'm Angry</option>
+        <option value="anxious">I'm Anxious</option>
+      </select>
+    </div>
+  
+    <button (click)="submitQuiz()" class="quiz-btn" [disabled]="submitting">
+      {{ submitting ? 'SENDING...' : 'SEND MY MOOD' }}
+    </button>
+  </div>
+</div>
   

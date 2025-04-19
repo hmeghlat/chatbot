@@ -1,13 +1,26 @@
-import { Component, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  OnInit,
+  AfterContentInit,
+  AfterViewInit,
+  ChangeDetectorRef,
+  NgZone
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ChatService } from '../services/chat.service';
 import { MarkdownModule } from 'ngx-markdown';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { AccountDialogComponent } from '../account-dialog/account-dialog.component';
 import { HttpClient } from '@angular/common/http';
+import { CookieService } from 'ngx-cookie-service';
+
+import { ChatService } from '../services/chat.service';
+import { ReportService } from '../services/report.service';
+import { ChatSessionService } from '../services/chat-session.service';
+import { AccountDialogComponent } from '../account-dialog/account-dialog.component';
 
 @Component({
   selector: 'app-chat',
@@ -23,170 +36,260 @@ import { HttpClient } from '@angular/common/http';
       ])
     ])
   ]
-
 })
-export class ChatComponent implements AfterViewInit {
-  messages: { text: string, sender: 'bot' | 'user' }[] = [];
-  newMessage: string = '';
+export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
+  @ViewChild('chatMessages') chatMessagesRef!: ElementRef;
+
+  messages: { text: string; sender: 'bot' | 'user' }[] = [];
+  newMessage = '';
   typing = false;
   conversationFinalized = false;
   viewingArchived = false;
+  generatingReport = false;
 
-  conversationList: { conversation_id: string, timestamp: string, title?: string }[] = [];
+  conversationList: { conversation_id: string; timestamp: string; title?: string }[] = [];
   selectedConversationId: string | null = null;
 
-  @ViewChild('chatMessages') chatMessagesRef!: ElementRef;
+  wordLimit = 400;
+  wordCount = 0;
 
   constructor(
     private chatService: ChatService,
+    private reportService: ReportService,
     private router: Router,
     private dialog: MatDialog,
-    private http: HttpClient
+    private http: HttpClient,
+    private sessionService: ChatSessionService,
+    private cookieService: CookieService,
+    private cdr: ChangeDetectorRef,
+    private zone: NgZone
   ) {}
 
+  /** 1. On restore tout en OnInit */
+  ngOnInit(): void {
+    this.messages = this.sessionService.getMessages();
+    this.wordCount = this.sessionService.getWordCount();
+    this.conversationFinalized = this.sessionService.isConversationFinalized();
+    this.selectedConversationId = this.sessionService.getConversationId();
+  }
+
+  /** 2. On injecte *seulement* le message de bienvenue ici */
+  ngAfterContentInit(): void {
+    if (this.messages.length === 0) {
+      // micro‑tâche pour éviter NG0100
+      Promise.resolve().then(() => this._appendBotMessage(
+        "Hello! How have you been feeling lately?"
+      ));
+    }
+  }
+
+  /** 3. Après que le contenu est monté, on scroll et on charge l’historique */
   ngAfterViewInit(): void {
+    this._scrollToBottom();
     this.loadConversations();
-    this.appendBotMessage("Hello! How have you been feeling lately?");
+  }
+
+  get remainingWords(): number {
+    return Math.max(0, this.wordLimit - this.wordCount);
   }
 
   goToFeed() {
+    this._saveSession();
     this.router.navigate(['/feed']);
   }
 
+  goToReports() {
+    this._saveSession();
+    this.router.navigate(['/reports']);
+  }
+
   startNewChat() {
+    this.sessionService.clearSession();
     this.messages = [];
     this.newMessage = '';
     this.typing = false;
     this.conversationFinalized = false;
     this.viewingArchived = false;
     this.selectedConversationId = null;
-
-    this.appendBotMessage("Hello! How have you been feeling lately?");
+    this.wordCount = 0;
+    Promise.resolve().then(() =>
+      this._appendBotMessage("Hello! How have you been feeling lately?")
+    );
   }
 
   sendMessage(finalize: boolean = false) {
     const text = this.newMessage.trim();
     if (!text || this.conversationFinalized) return;
 
-    this.appendUserMessage(text);
+    const wc = text.split(/\s+/).length;
+    if (this.wordCount + wc > this.wordLimit) {
+      this._appendBotMessage("⚠️ You've reached the 400‑word limit.");
+      return;
+    }
+
+    this._appendUserMessage(text);
     this.newMessage = '';
-    this.setTyping(true);
+    this.typing = true;
 
     this.chatService.sendMessage(text, finalize).subscribe({
-      next: (res: any) => {
-        this.setTyping(false);
+      next: res => {
+        this.typing = false;
         if (res.response) {
-          this.appendBotMessage(res.response);
-          if (res.final === true) {
+          this._appendBotMessage(res.response);
+          if (res.final) {
             this.conversationFinalized = true;
+            if (res.conversation_id) {
+              this.selectedConversationId = res.conversation_id;
+              this.loadConversations();
+            }
           }
         } else {
-          this.appendBotMessage("🤖 Sorry, I couldn't generate a response.");
+          this._appendBotMessage("🤖 Sorry, I couldn't generate a response.");
         }
+        this._saveSession();
       },
       error: () => {
-        this.setTyping(false);
-        this.appendBotMessage("❌ Server error while processing your message.");
+        this.typing = false;
+        this._appendBotMessage("❌ Server error while processing your message.");
+        this._saveSession();
       }
     });
   }
 
   finalizeConversation() {
-    const lastUserMessage = [...this.messages].reverse().find(msg => msg.sender === 'user');
-    if (!lastUserMessage || this.conversationFinalized) return;
+    const last = [...this.messages].reverse().find(m => m.sender === 'user');
+    if (!last || this.conversationFinalized) return;
 
-    this.setTyping(true);
-    this.chatService.sendMessage(lastUserMessage.text, true).subscribe({
-      next: (res: any) => {
-        this.setTyping(false);
+    this.typing = true;
+    this.chatService.sendMessage(last.text, true).subscribe({
+      next: res => {
+        this.typing = false;
         if (res.response) {
-          this.appendBotMessage(res.response);
-          if (res.final === true) {
+          this._appendBotMessage(res.response);
+          if (res.final) {
             this.conversationFinalized = true;
+            if (res.conversation_id) {
+              this.selectedConversationId = res.conversation_id;
+              this.loadConversations();
+            }
           }
         } else {
-          this.appendBotMessage("🤖 Sorry, I couldn't finalize the conversation.");
+          this._appendBotMessage("❌ Failed to finalize the conversation.");
         }
+        this._saveSession();
       },
       error: () => {
-        this.setTyping(false);
-        this.appendBotMessage("❌ Server error while finalizing.");
+        this.typing = false;
+        this._appendBotMessage("❌ Server error while finalizing.");
+        this._saveSession();
       }
     });
   }
 
-  private appendBotMessage(text: string) {
-    this.messages.push({ text, sender: 'bot' });
-    this.scrollToBottom();
+  generateConversationReport() {
+    if (!this.selectedConversationId || !this.conversationFinalized) return;
+    this.generatingReport = true;
+    this._appendBotMessage("⏳ Generating report…");
+    this.reportService.generateConversationReport(this.selectedConversationId)
+      .subscribe({
+        next: blob => {
+          this.reportService.downloadReport(
+            blob,
+            `conversation_${this.selectedConversationId}.pdf`
+          );
+          this._appendBotMessage("✅ Report downloaded!");
+          this.generatingReport = false;
+        },
+        error: () => {
+          this.generatingReport = false;
+          this._appendBotMessage("❌ Failed to generate report.");
+        }
+      });
   }
 
-  private appendUserMessage(text: string) {
-    this.messages.push({ text, sender: 'user' });
-    this.scrollToBottom();
-  }
-
-  private setTyping(value: boolean) {
-    this.typing = value;
-  }
-
-  private scrollToBottom() {
-    setTimeout(() => {
-      if (this.chatMessagesRef) {
-        const container = this.chatMessagesRef.nativeElement;
-        container.scrollTop = container.scrollHeight;
+  generateGeneralReport() {
+    this.generatingReport = true;
+    this._appendBotMessage("⏳ Generating general report…");
+    this.reportService.generateGeneralReport().subscribe({
+      next: blob => {
+        this.reportService.downloadReport(blob, `general_report.pdf`);
+        this._appendBotMessage("✅ General report downloaded!");
+        this.generatingReport = false;
+      },
+      error: () => {
+        this.generatingReport = false;
+        this._appendBotMessage("❌ Failed to generate general report.");
       }
-    }, 100);
-  }
-
-  logout() {
-    localStorage.removeItem('jwt');
-    this.router.navigate(['/login']);
+    });
   }
 
   openAccountDialog() {
-    const token = localStorage.getItem('jwt');
+    const token = this.cookieService.get('jwt');
     if (!token) return;
-
     this.http.get<any>('http://127.0.0.1:5000/account', {
       headers: { Authorization: `Bearer ${token}` }
-    }).subscribe({
-      next: (userInfo) => {
-        this.dialog.open(AccountDialogComponent, {
-          data: userInfo
-        });
-      },
-      error: (err) => {
-        console.error('Failed to fetch account info:', err);
-      }
-    });
-  }
-
-  loadConversations() {
-    this.chatService.getConversations().subscribe({
-      next: (list) => this.conversationList = list,
-      error: () => console.error("❌ Unable to fetch conversation history.")
+    }).subscribe(userInfo => {
+      this.dialog.open(AccountDialogComponent, { data: userInfo });
     });
   }
 
   viewConversation(convId: string) {
     this.chatService.getConversationById(convId).subscribe({
-      next: (conv) => {
+      next: conv => {
         this.messages = conv.messages;
-        this.viewingArchived = true;
         this.selectedConversationId = convId;
-        this.scrollToBottom();
+        this.viewingArchived = true;
+        this.conversationFinalized = true;
+        this.cdr.detectChanges();
+        this._scrollToBottom();
       },
-      error: () => console.error("❌ Unable to load conversation.")
+      error: () => console.error("Unable to load conversation.")
     });
   }
 
   exitArchivedView() {
-    this.messages = [];
-    this.viewingArchived = false;
-    this.conversationFinalized = false;
-    this.newMessage = '';
-    this.selectedConversationId = null;
+    this.startNewChat();
+  }
 
-    this.appendBotMessage("Hello! How have you been feeling lately?");
+  logout() {
+    this.cookieService.delete('jwt');
+    this.router.navigate(['/login']);
+  }
+
+  private loadConversations() {
+    this.chatService.getConversations().subscribe({
+      next: list => {
+        this.conversationList = list;
+        this.cdr.detectChanges();
+      },
+      error: () => console.error("Unable to fetch conversation history.")
+    });
+  }
+
+  private _scrollToBottom() {
+    setTimeout(() => {
+      const c = this.chatMessagesRef.nativeElement;
+      c.scrollTop = c.scrollHeight;
+    }, 50);
+  }
+
+  private _appendBotMessage(text: string) {
+    this.messages.push({ text, sender: 'bot' });
+    this.cdr.detectChanges();
+    this._scrollToBottom();
+  }
+
+  private _appendUserMessage(text: string) {
+    this.wordCount += text.split(/\s+/).length;
+    this.messages.push({ text, sender: 'user' });
+    this.cdr.detectChanges();
+    this._scrollToBottom();
+  }
+
+  private _saveSession() {
+    this.sessionService.saveMessages(this.messages);
+    this.sessionService.setConversationFinalized(this.conversationFinalized);
+    this.sessionService.setConversationId(this.selectedConversationId);
+    this.sessionService.saveWordCount(this.wordCount);
   }
 }

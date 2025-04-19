@@ -28,6 +28,7 @@
   <!-- 📰 Articles paginés -->
   <div class="feed-grid" *ngIf="!loading && !error && articles.length">
     <div class="article-card" *ngFor="let article of paginatedArticles">
+      <img *ngIf="article.image" [src]="article.image" alt="Article image" class="article-img" /> <!-- ✅ image -->
       <h2>{{ article.title }}</h2>
       <p [innerHTML]="article.summary"></p>
       <div class="read-more">

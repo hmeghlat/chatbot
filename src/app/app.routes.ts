@@ -5,6 +5,7 @@ import { AuthGuard } from './guards/chat.guard';
 import { QuizComponent } from './quiz/quiz.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import {FeedComponent} from './feed/feed.component';
+import { ReportsComponent } from './report/report.component';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent }, // Page d'accueil
@@ -12,6 +13,7 @@ export const routes: Routes = [
   { path: 'quiz', component: QuizComponent },
   { path: 'chat', component: ChatComponent, canActivate: [AuthGuard] },
   { path: 'feed',component:FeedComponent },
+  { path: 'reports', component: ReportsComponent, canActivate: [AuthGuard] },
 
   { path: '**', redirectTo: 'login' } // Route fallback
 ];

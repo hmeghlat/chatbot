@@ -7,6 +7,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { MarkdownModule } from 'ngx-markdown';
 import { importProvidersFrom } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { CookieService } from 'ngx-cookie-service';
 
 
 bootstrapApplication(AppComponent, {
@@ -14,6 +15,7 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes),  // Fournit le système de routing
     provideHttpClient(withInterceptors([])),  // Active HttpClient pour les requêtes API
     provideAnimations(), // ✅ Nécessaire pour @fadeIn
-    importProvidersFrom(MarkdownModule.forRoot()), provideAnimationsAsync()
+    importProvidersFrom(MarkdownModule.forRoot()), provideAnimationsAsync(),
+    CookieService
   ]
 }).catch(err => console.error(err));
