@@ -43,7 +43,6 @@ export class LoginComponent implements OnInit {
       }
     }
   }
-  
 
   toggleForm(isLogin: boolean) {
     this.isLoginActive = isLogin;
@@ -113,10 +112,10 @@ export class LoginComponent implements OnInit {
       this.authMessage = 'Login failed: no token found';
       return;
     }
-  
+
     if (this.isTokenExpired(token)) {
       console.warn("⚠️ Token expiré");
-    
+
       if (this.username && this.password) {
         console.log("🔁 Tentative de reconnexion avec identifiants...");
         this.onLogin();
@@ -126,8 +125,8 @@ export class LoginComponent implements OnInit {
         this.zone.run(() => this.router.navigate(['/login']));
       }
       return;
-    }    
-  
+    }
+
     // 🔐 Token valide, appel API
     this.http.get<any>(`${this.API_URL}/check_quiz`, {
       headers: { 'Authorization': `Bearer ${token}` }
@@ -147,5 +146,5 @@ export class LoginComponent implements OnInit {
       }
     });
   }
-  
+
 }
