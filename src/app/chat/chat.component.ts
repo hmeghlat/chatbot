@@ -103,6 +103,11 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
     this.router.navigate(['/reports']);
   }
 
+  goToJournal() {
+    this._saveSession();
+    this.router.navigate(['/journal']);
+  }
+
   startNewChat() {
     this.sessionService.clearSession();
     this.messages = [];

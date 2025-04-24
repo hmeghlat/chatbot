@@ -97,12 +97,4 @@ export class FeedComponent implements OnInit {
     this.router.navigate(['/chat']);
   }
 
-  logout() {
-    this.cookieService.delete('jwt');
-    this.router.navigate(['/login']);
-  }
-
-  goToAccount() {
-    this.router.navigate(['/chat']);
-  }
 }

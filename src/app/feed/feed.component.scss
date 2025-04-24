@@ -232,9 +232,77 @@
   }
 }
 
-/* 📱 Responsive */
+/* 📱 Responsive design */
+@media screen and (max-width: 1024px) {
+  .feed-container {
+    padding: 20px;
+  }
+
+  .chat-navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px;
+
+    .chat-navbar-left {
+      flex-direction: column;
+      align-items: flex-start;
+
+      img {
+        width: 40px;
+      }
+
+      .chat-brand h1 {
+        font-size: 20px;
+      }
+
+      .chat-subtitle {
+        font-size: 16px;
+        margin-left: 0;
+        margin-top: 4px;
+      }
+    }
+
+    .chat-navbar-right {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  .feed-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media screen and (max-width: 600px) {
   .article-card {
     height: auto;
+    padding: 15px;
+
+    h2 {
+      font-size: 16px;
+    }
+
+    p {
+      font-size: 13px;
+      -webkit-line-clamp: 6;
+    }
+
+    .read-more {
+      a {
+        font-size: 13px;
+      }
+    }
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 8px;
+
+    button {
+      width: 100%;
+      padding: 10px;
+    }
   }
 }
