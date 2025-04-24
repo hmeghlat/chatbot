@@ -1,0 +1,25 @@
+<div class="confidentiality-overlay">
+    <div class="confidentiality-dialog">
+      <div class="dialog-header">
+        <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo" class="logo">
+        <h2>Privacy Policy</h2>
+        <p class="subtitle">Please read our privacy policy carefully</p>
+      </div>
+  
+      <div class="policy-content" [innerHTML]="policyText"></div>
+  
+      <div class="agreement">
+        <label class="checkbox-container">
+          <input type="checkbox" id="agree" [(ngModel)]="agreed">
+          <span class="checkmark"></span>
+          <span class="label-text">I have read and agree to the privacy policy</span>
+        </label>
+      </div>
+  
+      <div class="actions">
+        <button class="accept-btn" [disabled]="!agreed" (click)="onAccept()">Accept</button>
+        <button class="decline-btn" (click)="onDecline()">Decline</button>
+      </div>
+    </div>
+  </div>
+  

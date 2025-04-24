@@ -1,0 +1,108 @@
+<div class="chat-container">
+  <!-- Sidebar -->
+  <aside class="chat-sidebar">
+    <div class="logo">
+      <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo" />
+      <h1 class="gradient-text">MindHorizon</h1>
+    </div>
+
+    <button class="btn" (click)="goToFeed()"> My Feed</button>
+    <button class="btn" (click)="goToReports()">My Reports</button>
+    <button class="btn" (click)="goToJournal()">My Journal</button>
+    <button class="btn" (click)="startNewChat()">➕ New Chat</button>
+
+    <div class="chat-history">
+      <div
+        *ngFor="let conv of conversationList"
+        class="conversation-item"
+        [class.active]="conv.conversation_id === selectedConversationId"
+        (click)="viewConversation(conv.conversation_id)">
+        
+        <div class="conv-title">
+          {{ conv.title || 'Untitled conversation' }}
+        </div>
+        
+        <div class="conv-date">
+          {{ conv.timestamp | date:'dd MMMM yyyy, HH:mm' }}
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="settings-btn">⚙ Settings</button>
+      <button class="about-btn">ℹ About</button>
+    </div>
+  </aside>
+
+  <!-- Main Chat -->
+  <section class="chat-main">
+    <!-- 💬 Chat Header -->
+    <div class="chat-header">
+      <h2>Hori chatbot</h2>
+      <div class="chat-actions">
+        <button class="account-btn" (click)="openAccountDialog()">👤 Account</button>
+        <button class="account-btn" (click)="generateGeneralReport()" [disabled]="generatingReport">
+          {{ generatingReport ? '⏳ Generating...' : '📥 General Report' }}
+        </button>
+        <button class="logout-btn" (click)="logout()">🚪 Logout</button>
+      </div>
+    </div>
+
+    <!-- 💬 Messages -->
+    <div class="chat-messages" #chatMessages>
+      <div *ngFor="let msg of messages"
+           [ngClass]="{ 'message': true, 'bot-message': msg.sender === 'bot', 'user-message': msg.sender === 'user' }"
+           [@fadeIn]>
+        <img *ngIf="msg.sender === 'bot'" src="assets/hori.jpg" alt="Hori" />
+        <markdown *ngIf="msg.sender === 'bot'" [data]="msg.text"></markdown>
+        <p *ngIf="msg.sender === 'user'">{{ msg.text }}</p>
+      </div>
+
+      <!-- ✨ Typing indicator -->
+      <div class="typing-indicator" *ngIf="typing">
+        <img src="assets/hori.jpg" alt="Hori typing" />
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      </div>
+
+      <!-- 📝 Archived conversation notice + report -->
+      <div class="archived-controls" *ngIf="viewingArchived">
+        <p>You are viewing an archived conversation.</p>
+        <div class="archived-actions">
+          <button class="return-btn" (click)="exitArchivedView()">🔄 Return to a new chat</button>
+          <button 
+            class="report-btn" 
+            (click)="generateConversationReport()" 
+            [disabled]="generatingReport">
+            {{ generatingReport ? '⏳ Generating...' : '📊 Report' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+      <!-- 🧮 Word Counter -->
+    <div class="word-counter" [ngClass]="{ 'limit-reached': remainingWords === 0 }">
+      {{ remainingWords }} words remaining
+    </div>
+
+    
+
+    <!-- 📩 Chat Input -->
+    <div class="chat-input">
+      <input 
+        type="text" 
+        [(ngModel)]="newMessage" 
+        (keyup.enter)="sendMessage()" 
+        placeholder="Message @Hori"
+        [disabled]="conversationFinalized || typing || viewingArchived || remainingWords === 0"
+      />
+
+
+      <div class="chat-icons">
+        <button (click)="sendMessage()" [disabled]="conversationFinalized || typing || viewingArchived">📨</button>
+        <button (click)="finalizeConversation()" [disabled]="conversationFinalized || typing || viewingArchived">✅ Finalize</button>
+        <button disabled>😊</button>
+        <button disabled>🎤</button>
+      </div>
+    </div>
+  </section>
+</div>

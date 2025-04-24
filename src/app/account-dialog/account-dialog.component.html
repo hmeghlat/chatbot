@@ -1,0 +1,57 @@
+<div class="account-dialog">
+  <h2><i class="fa fa-user-circle"></i> Account Info</h2>
+
+  <form *ngIf="isEditing" (ngSubmit)="updateAccount()" #accountForm="ngForm">
+    <div class="info-group">
+      <label><strong>Username:</strong></label>
+      <input [(ngModel)]="updatedAccount.username" name="username" disabled />
+    </div>
+
+    <div class="info-group">
+      <label><strong>Age:</strong></label>
+      <input type="number" [(ngModel)]="updatedAccount.age" name="age" />
+    </div>
+
+    <div class="info-group">
+      <label><strong>Gender:</strong></label>
+      <span>{{ updatedAccount.gender || '—' }}</span>
+    </div>
+
+    <button type="button" class="btn-password" (click)="togglePasswordFields()">
+      🔐 {{ showPasswordFields ? 'Cancel Password Change' : 'Modify Password' }}
+    </button>
+
+    <div *ngIf="showPasswordFields">
+      <div class="info-group">
+        <label><strong>Current Password:</strong></label>
+        <input type="password" [(ngModel)]="updatedAccount.currentPassword" name="currentPassword" />
+      </div>
+      <div class="info-group">
+        <label><strong>New Password:</strong></label>
+        <input type="password" [(ngModel)]="updatedAccount.newPassword" name="newPassword" />
+      </div>
+      <div class="info-group">
+        <label><strong>Confirm Password:</strong></label>
+        <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" />
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit">💾 Save</button>
+      <button type="button" (click)="cancelEdit()">✖ Cancel</button>
+    </div>
+  </form>
+
+  <div *ngIf="!isEditing" class="display-info">
+    <div class="info-group"><strong>Username:</strong> {{ updatedAccount.username }}</div>
+    <div class="info-group"><strong>Age:</strong> {{ updatedAccount.age }}</div>
+    <div class="info-group"><strong>Gender:</strong> {{ updatedAccount.gender }}</div>
+
+    <div class="actions">
+      <button (click)="isEditing = true">✏️ Modify My Info</button>
+     
+     
+    </div>
+  </div>
+
+</div>

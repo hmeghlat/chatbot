@@ -1,0 +1,409 @@
+<!-- 🔝 Navbar identique au chat -->
+<nav class="chat-navbar">
+  <div class="chat-navbar-left">
+    <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo" />
+    <span class="chat-brand">
+      <h1 class="gradient-text">MindHorizon</h1>
+    </span>
+    <span class="chat-subtitle">My Journal</span>
+  </div>
+
+  <div class="chat-navbar-right">
+    <button (click)="goToChat()">
+      <i class="fa fa-message"></i> Back to Chat
+    </button>
+  </div>
+</nav>
+
+
+<div class="journal-container">
+    <!-- Free emotional entry -->
+    <section class="entry-section" [@fadeInUp]>
+      <h2>Emotional Journal 📝</h2>
+      <textarea [(ngModel)]="entryText" placeholder="Write how you feel... (free text)" rows="4"></textarea>
+      <div class="buttons">
+        <button (click)="saveEntry()" [disabled]="!entryText.trim()">Save</button>
+        <button (click)="clearEntry()">Clear</button>
+      </div>
+      <div class="entries">
+        <div class="entry" *ngFor="let entry of entries" [@fadeInUp]>
+          <p class="date">{{ entry.date | date:'short' }}</p>
+          <p class="text">{{ entry.text }}</p>
+        </div>
+      </div>
+    </section>
+  
+   <!-- Guided Emotions -->
+<section class="guided-section" [@fadeInUp]>
+  <h2>Explore My Emotions 🌦️</h2>
+
+  <div class="emotion" *ngFor="let item of emotionsList">
+    <label>{{ item.prompt }}</label>
+    <input
+      type="text"
+      [(ngModel)]="item.response"
+      placeholder="Type here..."
+    />
+  </div>
+
+  <div class="section-actions">
+    <button (click)="saveEmotions()">Save</button>
+    <button (click)="resetEmotions()">Cancel</button>
+  </div>
+
+  <!-- Affichage des entrées guidées comme un mini-journal -->
+  <div class="entries emotion-entries" *ngIf="emotionEntries.length">
+    <div class="entry" *ngFor="let emo of emotionEntries">
+      <p class="date">{{ emo.date | date:'short' }}</p>
+      <ul>
+        <li *ngFor="let resp of emo.responses; let i = index">
+          {{ emotionsList[i].prompt }}: {{ resp }}
+        </li>
+      </ul>
+    </div>
+  </div>
+ </section>
+
+  
+ <!-- Conceptual associations -->
+<section class="association-section" [@fadeInUp]>
+  <h2>My Current Associations 🌈</h2>
+
+  <div class="tags">
+    <div><h4>🧠 Rational</h4>
+      <span *ngFor="let word of rationalList" class="tag">{{ word }}</span>
+    </div>
+    <div><h4>💖 Intuitive</h4>
+      <span *ngFor="let word of intuitiveList" class="tag">{{ word }}</span>
+    </div>
+  </div>
+
+  <div class="association-inputs">
+    <div *ngFor="let assoc of associations">
+      <label>{{ assoc.label }}</label>
+      <input type="text" [(ngModel)]="assoc.response" placeholder="Type here..." />
+    </div>
+  </div>
+
+  <!-- Save / Cancel -->
+  <div class="section-actions">
+    <button (click)="saveAssociations()">Save</button>
+    <button (click)="resetAssociations()">Cancel</button>
+  </div>
+
+  <!-- Journal des association snapshots -->
+  <div class="entries association-entries" *ngIf="associationEntries.length">
+    <h4>Past Association Snapshots</h4>
+    <div class="entry" *ngFor="let snap of associationEntries">
+      <p class="date">{{ snap.date | date:'short' }}</p>
+      <ul>
+        <li *ngFor="let resp of snap.responses; let i = index">
+          {{ associations[i].label }}: {{ resp }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+  
+  <!-- My life in 10 words -->
+<section class="ten-words-section" [@fadeInUp]>
+  <h2>My Life in 10 Words ✨</h2>
+
+  <!-- zone d'ajout -->
+  <div class="ten-words-input">
+    <input
+      type="text"
+      [(ngModel)]="currentWord"
+      [disabled]="tenWords.length >= maxWords"
+      placeholder="One word..."
+    />
+    <button
+      (click)="addWord()"
+      [disabled]="!currentWord.trim() || tenWords.length >= maxWords"
+    >
+      Add
+    </button>
+  </div>
+
+  <!-- Save / Cancel -->
+  <div class="section-actions">
+    <button (click)="saveWords()" [disabled]="tenWords.length === 0">
+      Save
+    </button>
+    <button (click)="resetWords()" class="reset-btn">
+      Cancel
+    </button>
+  </div>
+
+  <!-- affichage de la liste courante -->
+  <div class="ten-words-display">
+    <span *ngFor="let word of tenWords; let i = index" class="word-chip">
+      {{ word }}
+      <button (click)="removeWord(i)">×</button>
+    </span>
+  </div>
+  <p class="word-count">
+    {{ tenWords.length }} / {{ maxWords }} words
+  </p>
+
+  <!-- mini-journal des anciennes listes -->
+  <div class="entries tenwords-entries" *ngIf="tenWordsEntries.length">
+    <h4>Ten-Words Journal</h4>
+    <div class="entry" *ngFor="let snap of tenWordsEntries">
+      <p class="date">{{ snap.date | date:'short' }}</p>
+      <div class="ten-words-display">
+        <span *ngFor="let w of snap.data" class="word-chip">
+          {{ w }}
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+   
+ <!-- The Kingdom of 3 -->
+<section class="kingdom-section" [@fadeInUp]>
+  <h2>The Kingdom of 3 👑</h2>
+  <p class="subtitle">3 is a magical number.</p>
+
+  <!-- Inputs dynamiques -->
+  <div
+    class="kingdom-block"
+    *ngFor="let field of kingdomFields; let i = index"
+  >
+    <h4>{{ kingdomTitles[i] }}</h4>
+    <div *ngFor="let j of [0, 1, 2]">
+      <input
+        type="text"
+        [(ngModel)]="kingdomOfThree[field][j]"
+        placeholder="Write here..."
+      />
+    </div>
+  </div>
+
+  <!-- Save / Cancel -->
+  <div class="section-actions">
+    <button (click)="saveKingdomOfThree()">Save</button>
+    <button (click)="resetKingdomOfThree()">Cancel</button>
+  </div>
+
+  <!-- Mini-journal Kingdom -->
+  <div class="entries kingdom-entries" *ngIf="kingdomEntries.length">
+    <h4>Kingdom Journal</h4>
+    <div class="entry" *ngFor="let snap of kingdomEntries">
+      <p class="date">{{ snap.date | date:'short' }}</p>
+      
+      <div class="kingdom-snapshot">
+        <!-- Pour chaque champ, on réaffiche le titre + la liste -->
+        <ng-container *ngFor="let field of kingdomFields; let i = index">
+          <h5>{{ kingdomTitles[i] }}</h5>
+          <ul>
+            <li *ngFor="let w of snap.data?.[field] || []">
+              {{ w }}
+            </li>
+          </ul>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+ <!-- Motivation & Perseverance -->
+<section class="motivation-section" [@fadeInUp]>
+  <h2>Mmmm... Motivation 💡</h2>
+  <p class="subtitle">What gives me the drive to keep going</p>
+
+  <!-- Partie 1 -->
+  <div class="motivation-block">
+    <label>My confidence comes from...</label>
+    <input type="text" [(ngModel)]="motivation.confidenceSource" placeholder="Type here..." />
+  </div>
+  <div class="motivation-block">
+    <label>Things that excite me:</label>
+    <input type="text" [(ngModel)]="motivation.excitingThings" placeholder="Type here..." />
+  </div>
+  <div class="motivation-block">
+    <label>The thing I’ll never give up on:</label>
+    <input type="text" [(ngModel)]="motivation.neverGiveUpOn" placeholder="Type here..." />
+  </div>
+  <div class="motivation-block">
+    <label>My heart tells me...</label>
+    <input type="text" [(ngModel)]="motivation.heartSays" placeholder="Type here..." />
+  </div>
+  <div class="motivation-block">
+    <label>My head tells me...</label>
+    <input type="text" [(ngModel)]="motivation.headSays" placeholder="Type here..." />
+  </div>
+
+  <!-- Partie 2 -->
+  <h2>What keeps me going 🔥</h2>
+  <div class="motivation-block">
+    <label>The thing I hold on to:</label>
+    <input type="text" [(ngModel)]="motivation.holdOnTo" placeholder="Type here..." />
+  </div>
+  <div class="motivation-block">
+    <label>Things that make me try harder:</label>
+    <input type="text" [(ngModel)]="motivation.effortTriggers" placeholder="Type here..." />
+  </div>
+  <div class="motivation-block">
+    <label>A fear that drives me:</label>
+    <input type="text" [(ngModel)]="motivation.drivingFear" placeholder="Type here..." />
+  </div>
+  <div class="motivation-block">
+    <label>A goal that motivates me:</label>
+    <input type="text" [(ngModel)]="motivation.motivatingGoal" placeholder="Type here..." />
+  </div>
+
+  <!-- Save / Cancel -->
+  <div class="section-actions">
+    <button (click)="saveMotivation()">Save</button>
+    <button (click)="resetMotivation()">Cancel</button>
+  </div>
+
+  <!-- Mini-journal des motivations -->
+  <div class="entries motivation-entries" *ngIf="motivationEntries.length">
+    <h4>Motivation Journal</h4>
+    <div class="entry" *ngFor="let snap of motivationEntries">
+      <p class="date">{{ snap.date | date:'short' }}</p>
+      <ul>
+        <li><strong>Confidence comes from:</strong> {{ snap.data.confidenceSource }}</li>
+        <li><strong>Things that excite me:</strong> {{ snap.data.excitingThings }}</li>
+        <li><strong>Never give up on:</strong> {{ snap.data.neverGiveUpOn }}</li>
+        <li><strong>My heart tells me:</strong> {{ snap.data.heartSays }}</li>
+        <li><strong>My head tells me:</strong> {{ snap.data.headSays }}</li>
+        <li><strong>Hold on to:</strong> {{ snap.data.holdOnTo }}</li>
+        <li><strong>Try harder when:</strong> {{ snap.data.effortTriggers }}</li>
+        <li><strong>A fear that drives me:</strong> {{ snap.data.drivingFear }}</li>
+        <li><strong>A goal that motivates me:</strong> {{ snap.data.motivatingGoal }}</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+  <!-- Life Goals -->
+<section class="goals-section" [@fadeInUp]>
+  <h2>My Life Goals 🎯</h2>
+
+  <!-- Inputs dynamiques -->
+  <div class="goal-block"
+       *ngFor="let field of goalsFields; let i = index">
+    <label>{{ goalsTitles[i] }}</label>
+    <input
+      type="text"
+      [(ngModel)]="objectives[field]"
+      (ngModelChange)="onObjectiveChange(field, $event)"
+      [ngModelOptions]="{ standalone: true }"
+      placeholder="Type here..."
+    />
+  </div>
+
+  <!-- Save / Cancel -->
+  <div class="section-actions">
+    <button (click)="saveGoals()">Save</button>
+    <button (click)="resetGoals()">Cancel</button>
+  </div>
+
+  <!-- Mini-journal des objectifs -->
+  <div class="entries goals-entries" *ngIf="goalsEntries.length">
+    <h4>Goals Journal</h4>
+    <div class="entry" *ngFor="let snap of goalsEntries">
+      <p class="date">{{ snap.date | date:'short' }}</p>
+      <ul>
+        <li *ngFor="let field of goalsFields; let i = index">
+          <strong>{{ goalsTitles[i] }}</strong> {{ snap.data[field] }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+  
+  <!-- First Steps -->
+<section class="resolutions-section" [@fadeInUp]>
+  <h2>It All Starts With a First Step 🪜</h2>
+
+  <div class="resolution-block">
+    <label>Small resolutions I could take today:</label>
+    <textarea rows="3"
+              [(ngModel)]="resolutions.small"
+              placeholder="Write here..."></textarea>
+
+    <label><em>First step to achieve it:</em></label>
+    <input type="text"
+           [(ngModel)]="resolutions.smallStep"
+           placeholder="Type here..." />
+  </div>
+
+  <div class="resolution-block">
+    <label>Big resolutions I plan to take tomorrow:</label>
+    <textarea rows="3"
+              [(ngModel)]="resolutions.big"
+              placeholder="Write here..."></textarea>
+
+    <label><em>First step to achieve it:</em></label>
+    <input type="text"
+           [(ngModel)]="resolutions.bigStep"
+           placeholder="Type here..." />
+  </div>
+
+  <!-- Save / Cancel -->
+  <div class="section-actions">
+    <button (click)="saveResolutions()">Save</button>
+    <button (click)="resetResolutions()">Cancel</button>
+  </div>
+
+  <!-- Mini-journal des First Steps -->
+  <div class="entries resolutions-entries" *ngIf="resolutionsEntries.length">
+    <h4>First Steps Journal</h4>
+    <div class="entry" *ngFor="let snap of resolutionsEntries">
+      <p class="date">{{ snap.date | date:'short' }}</p>
+      <ul>
+        <li><strong>Small resolution:</strong> {{ snap.data.small }}</li>
+        <li><strong>Step to achieve it:</strong> {{ snap.data.smallStep }}</li>
+        <li><strong>Big resolution:</strong> {{ snap.data.big }}</li>
+        <li><strong>Step to achieve it:</strong> {{ snap.data.bigStep }}</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 10-Year Projection -->
+<section class="projection-section" [@fadeInUp]>
+  <h2>Projection in 10 Years 🔮</h2>
+
+  <!-- Inputs -->
+  <div
+    *ngFor="let item of projection; let i = index; trackBy: trackByIndex"
+    class="projection-item"
+  >
+    <input
+      type="text"
+      [(ngModel)]="projection[i]"
+      placeholder="In 10 years, I will..."
+    />
+  </div>
+
+  <!-- Save / Cancel -->
+  <div class="section-actions">
+    <button (click)="saveProjection()">Save</button>
+    <button (click)="resetProjection()">Cancel</button>
+  </div>
+
+  <!-- Mini-journal des projections -->
+  <div class="entries projection-entries" *ngIf="projectionEntries.length">
+    <h4>Projection Journal</h4>
+    <div class="entry" *ngFor="let snap of projectionEntries">
+      <p class="date">{{ snap.date | date:'short' }}</p>
+      <ul>
+        <li *ngFor="let p of snap.data">
+          {{ p }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+  
+  </div>
+  

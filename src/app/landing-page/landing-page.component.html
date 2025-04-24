@@ -1,0 +1,364 @@
+<!-- 🌍 MindHorizon Landing Page -->
+<div class="landing-wrapper">
+  
+  <!-- 🏠 Navigation -->
+  <nav [class.scrolled]="isNavbarScrolled">
+      <div class="logo">
+          <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo">
+          <span>MindHorizon</span>
+      </div>
+  
+      <button class="mobile-menu-btn" (click)="toggleMobileMenu()" [class.active]="isMobileMenuOpen">
+          <span></span>
+          <span></span>
+          <span></span>
+      </button>
+
+      <div class="nav-links" [class.active]="isMobileMenuOpen">
+          <a href="#home" (click)="scrollToSection('home', $event)">Home</a>
+          <a href="#about" (click)="scrollToSection('about', $event)">About Us</a>
+          <a href="#features" (click)="scrollToSection('features', $event)">Services</a>
+          <a href="#testimonials" (click)="scrollToSection('testimonials', $event)">Testimonials</a>
+          <a href="#contact" (click)="scrollToSection('contact', $event)">Contact</a>
+      </div>
+  </nav>
+
+  <!-- 🌅 Header -->
+  <header id="home">
+    <!-- Background Shapes -->
+    <div class="background-shapes">
+        <svg class="shape shape-1" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="80" fill="url(#gradient1)" opacity="0.1"/>
+        </svg>
+        <svg class="shape shape-2" viewBox="0 0 200 200">
+            <path d="M100,20 C140,20 180,60 180,100 C180,140 140,180 100,180 C60,180 20,140 20,100 C20,60 60,20 100,20" fill="url(#gradient1)" opacity="0.1"/>
+        </svg>
+    </div>
+
+    <div class="header-content">
+        <h1 class="welcome-title">Welcome to <span class="gradient-text">MindHorizon</span></h1>
+        <p class="subtitle">Your AI companion for daily mental well-being</p>
+        <p class="header-description">An innovative and personalized approach to mental health, available 24/7.</p>
+
+        <div class="buttons">
+            <button class="primary-btn" (click)="goToLogin()">
+                <span>Get Started Now</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+            <button class="secondary-btn">
+                <span>Explore as Guest</span>
+                <i class="fas fa-external-link-alt"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Header Illustration -->
+    <div class="header-illustration">
+        <svg viewBox="0 0 500 500" class="zen-svg">
+            <defs>
+                <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#6A5ACD"/>
+                    <stop offset="100%" style="stop-color:#A0C4FF"/>
+                </linearGradient>
+                <!-- Pattern for subtle background -->
+                <pattern id="dotPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <circle cx="10" cy="10" r="1" fill="#6A5ACD" opacity="0.1"/>
+                </pattern>
+            </defs>
+            
+            <!-- Background circle -->
+            <circle class="bg-circle" cx="250" cy="250" r="200" fill="url(#dotPattern)" opacity="0.1"/>
+            
+            <!-- Zen circle (Enso) -->
+            <path class="zen-circle" 
+                  d="M250,150 
+                     A100,100 0 1,1 250,350 
+                     A100,100 0 1,1 250,150" 
+                  fill="none" 
+                  stroke="url(#gradient1)" 
+                  stroke-width="8" 
+                  stroke-linecap="round"
+                  opacity="0.8"/>
+            
+            <!-- Ripple effects -->
+            <circle class="ripple ripple-1" cx="250" cy="250" r="140" fill="none" stroke="url(#gradient1)" stroke-width="2" opacity="0.3"/>
+            <circle class="ripple ripple-2" cx="250" cy="250" r="160" fill="none" stroke="url(#gradient1)" stroke-width="2" opacity="0.2"/>
+            <circle class="ripple ripple-3" cx="250" cy="250" r="180" fill="none" stroke="url(#gradient1)" stroke-width="2" opacity="0.1"/>
+            
+            <!-- Lotus petals -->
+            <g class="lotus" transform="translate(250, 250)">
+                <path class="petal" d="M0,-60 C20,-40 20,-20 0,0 C-20,-20 -20,-40 0,-60" fill="url(#gradient1)" opacity="0.2"/>
+                <path class="petal" d="M0,-60 C20,-40 20,-20 0,0 C-20,-20 -20,-40 0,-60" fill="url(#gradient1)" opacity="0.2" transform="rotate(60)"/>
+                <path class="petal" d="M0,-60 C20,-40 20,-20 0,0 C-20,-20 -20,-40 0,-60" fill="url(#gradient1)" opacity="0.2" transform="rotate(120)"/>
+                <path class="petal" d="M0,-60 C20,-40 20,-20 0,0 C-20,-20 -20,-40 0,-60" fill="url(#gradient1)" opacity="0.2" transform="rotate(180)"/>
+                <path class="petal" d="M0,-60 C20,-40 20,-20 0,0 C-20,-20 -20,-40 0,-60" fill="url(#gradient1)" opacity="0.2" transform="rotate(240)"/>
+                <path class="petal" d="M0,-60 C20,-40 20,-20 0,0 C-20,-20 -20,-40 0,-60" fill="url(#gradient1)" opacity="0.2" transform="rotate(300)"/>
+            </g>
+        </svg>
+    </div>
+  </header>
+
+  <!-- 🧩 About Section -->
+  <section class="presentation" id="about">
+    <div class="content">
+      <div class="card">
+        <h2>About MindHorizon</h2>
+        <hr>
+        <p><strong>MindHorizon</strong> is your AI-powered companion designed to support your mental well-being. Our platform helps you <strong>understand your emotions</strong> and <strong>develop healthy mental habits</strong> through:</p>
+        
+        <ul class="feature-list">
+          <li>
+            <div class="icon-wrapper">
+              <i class="fas fa-brain"></i>
+            </div>
+            <div class="feature-content">
+              <strong>AI Conversations</strong>
+              <span>Chat with Hori for personalized emotional support.</span>
+            </div>
+          </li>
+          <li>
+            <div class="icon-wrapper">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="feature-content">
+              <strong>Mood Tracking</strong>
+              <span>Monitor trends and receive personalized insights.</span>
+            </div>
+          </li>
+          <li>
+            <div class="icon-wrapper">
+              <i class="fas fa-journal-whills"></i>
+            </div>
+            <div class="feature-content">
+              <strong>Personal Journal</strong>
+              <span>Express yourself in a private, secure space.</span>
+            </div>
+          </li>
+          <li>
+            <div class="icon-wrapper">
+              <i class="fas fa-books"></i>
+            </div>
+            <div class="feature-content">
+              <strong>Resources</strong>
+              <span>Access expert content on mental health.</span>
+            </div>
+          </li>
+        </ul>
+        
+        <p class="cta-text">At MindHorizon, we believe in an <strong>accessible, judgment-free, and engaging approach</strong> to mental well-being. Start your journey to better mental health today!</p>
+      </div>
+
+      <!-- About Illustration -->
+      <div class="about-illustration">
+          <svg viewBox="0 0 400 400" class="growth-svg">
+              <defs>
+                  <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" style="stop-color:#6A5ACD"/>
+                      <stop offset="100%" style="stop-color:#A0C4FF"/>
+                  </linearGradient>
+                  <pattern id="pattern2" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                      <circle cx="10" cy="10" r="1" fill="#6A5ACD" opacity="0.1"/>
+                  </pattern>
+              </defs>
+              <!-- Background -->
+              <rect x="0" y="0" width="400" height="400" fill="url(#pattern2)"/>
+              <!-- Growth path -->
+              <g class="growth-elements">
+                  <path class="growing-path" d="M200 350 C200 350 200 250 200 250 C200 200 150 150 200 100 C250 150 300 200 200 250" stroke="url(#gradient2)" fill="none" stroke-width="3"/>
+                  <!-- Leaves -->
+                  <path class="leaf" d="M180 150 Q200 130 220 150" stroke="url(#gradient2)" fill="none" stroke-width="2"/>
+                  <path class="leaf" d="M160 200 Q180 180 200 200" stroke="url(#gradient2)" fill="none" stroke-width="2"/>
+                  <path class="leaf" d="M200 180 Q220 160 240 180" stroke="url(#gradient2)" fill="none" stroke-width="2"/>
+                  <!-- Energy circles -->
+                  <circle class="floating-circle" cx="200" cy="100" r="20" fill="url(#gradient2)" opacity="0.6"/>
+                  <circle class="floating-circle-small" cx="180" cy="150" r="10" fill="url(#gradient2)" opacity="0.4"/>
+                  <circle class="floating-circle-small" cx="220" cy="180" r="8" fill="url(#gradient2)" opacity="0.3"/>
+              </g>
+          </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🚀 Features Section -->
+  <section class="features" id="features">
+    <h2>Our Services</h2>
+    <div class="features-container">
+      <div class="feature" data-aos="fade-up">
+          <div class="feature-illustration">
+              <svg viewBox="0 0 200 200" class="chat-svg">
+                  <defs>
+                      <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" style="stop-color:#6A5ACD"/>
+                          <stop offset="100%" style="stop-color:#A0C4FF"/>
+                      </linearGradient>
+                  </defs>
+                  <!-- Chat bubbles -->
+                  <g class="chat-bubbles">
+                      <path class="bubble" d="M40 100 L40 60 Q40 40 60 40 L140 40 Q160 40 160 60 L160 100 Q160 120 140 120 L60 120 Q40 120 40 100" fill="url(#gradient3)" opacity="0.2"/>
+                      <circle class="dot dot-1" cx="85" cy="80" r="5" fill="url(#gradient3)"/>
+                      <circle class="dot dot-2" cx="100" cy="80" r="5" fill="url(#gradient3)"/>
+                      <circle class="dot dot-3" cx="115" cy="80" r="5" fill="url(#gradient3)"/>
+                  </g>
+              </svg>
+          </div>
+          <h3>AI Conversations</h3>
+          <p>Your personal AI companion is here to offer empathetic conversations and non-judgmental support, available 24/7.</p>
+      </div>
+      
+      <div class="feature" data-aos="fade-up" data-aos-delay="100">
+          <div class="feature-illustration">
+              <svg viewBox="0 0 200 200" class="mood-svg">
+                  <!-- Mood tracking visualization -->
+                  <g class="mood-tracking">
+                      <path class="mood-line" d="M40 100 Q70 70 100 90 T160 60" stroke="url(#gradient3)" fill="none" stroke-width="3"/>
+                      <circle class="tracking-dot main-dot" cx="100" cy="90" r="8" fill="url(#gradient3)"/>
+                      <circle class="tracking-dot" cx="70" cy="70" r="4" fill="url(#gradient3)" opacity="0.6"/>
+                      <circle class="tracking-dot" cx="130" cy="75" r="4" fill="url(#gradient3)" opacity="0.6"/>
+                  </g>
+                  <!-- Grid lines -->
+                  <g class="grid" opacity="0.1">
+                      <line x1="40" y1="40" x2="40" y2="160" stroke="#6A5ACD"/>
+                      <line x1="40" y1="160" x2="160" y2="160" stroke="#6A5ACD"/>
+                  </g>
+              </svg>
+          </div>
+          <h3>Mood Tracking</h3>
+          <p>Understand your emotions with our personalized mood tracking tool. Identify trends and patterns.</p>
+      </div>
+      
+      <div class="feature" data-aos="fade-up" data-aos-delay="200">
+          <div class="feature-illustration">
+              <svg viewBox="0 0 200 200" class="resources-svg">
+                  <!-- Resources visualization -->
+                  <g class="resources">
+                      <rect x="50" y="50" width="100" height="100" rx="10" fill="url(#gradient3)" opacity="0.1"/>
+                      <g class="resource-lines">
+                          <path class="resource-line" d="M70 80 H130" stroke="url(#gradient3)" stroke-width="3"/>
+                          <path class="resource-line" d="M70 100 H130" stroke="url(#gradient3)" stroke-width="3"/>
+                          <path class="resource-line" d="M70 120 H110" stroke="url(#gradient3)" stroke-width="3"/>
+                      </g>
+                      <!-- Decorative elements -->
+                      <circle class="decoration" cx="160" cy="40" r="5" fill="url(#gradient3)" opacity="0.3"/>
+                      <circle class="decoration" cx="40" cy="160" r="5" fill="url(#gradient3)" opacity="0.3"/>
+                  </g>
+              </svg>
+          </div>
+          <h3>My Feed</h3>
+          <p>Access curated mental health resources and expert insights tailored to your needs.</p>
+      </div>
+      
+      <div class="feature" data-aos="fade-up" data-aos-delay="300">
+          <div class="feature-illustration">
+              <svg viewBox="0 0 200 200" class="journal-svg">
+                  <!-- Journal visualization -->
+                  <g class="journal">
+                      <path class="journal-cover" d="M60 40 L140 40 L140 160 L60 160 Z" fill="url(#gradient3)" opacity="0.1"/>
+                      <g class="writing-lines">
+                          <path class="writing-line" d="M80 80 H120" stroke="url(#gradient3)" stroke-width="3"/>
+                          <path class="writing-line" d="M80 100 H120" stroke="url(#gradient3)" stroke-width="3"/>
+                          <path class="writing-line" d="M80 120 H100" stroke="url(#gradient3)" stroke-width="3"/>
+                      </g>
+                      <!-- Pen animation -->
+                      <path class="pen" d="M75 140 L85 130" stroke="url(#gradient3)" stroke-width="2"/>
+                  </g>
+              </svg>
+          </div>
+          <h3>In My Mind</h3>
+          <p>Your private space for reflection and emotional awareness. Journal your thoughts securely.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 👥 Testimonials Section -->
+  <section class="testimonials" id="testimonials">
+    <h2>What Our Users Say</h2>
+    <div class="testimonials-container">
+      <div class="testimonial" data-aos="fade-up">
+        <div class="testimonial-content">
+          <p>"MindHorizon helped me better understand my emotions and develop strategies to manage my anxiety. It's like having a therapist available 24/7."</p>
+          <div class="testimonial-author">
+            <strong>Marie L.</strong>
+            <span>User for 6 months</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="testimonial" data-aos="fade-up" data-aos-delay="100">
+        <div class="testimonial-content">
+          <p>"The mood tracking feature allowed me to become aware of my emotional patterns. It's a valuable tool for my daily well-being."</p>
+          <div class="testimonial-author">
+            <strong>Thomas B.</strong>
+            <span>User for 3 months</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="testimonial" data-aos="fade-up" data-aos-delay="200">
+        <div class="testimonial-content">
+          <p>"Conversations with Hori are always comforting and relevant. C'est un véritable soutien dans les moments difficiles."</p>
+          <div class="testimonial-author">
+            <strong>Sophie M.</strong>
+            <span>User for 1 year</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 📞 Footer -->
+  <footer id="contact">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h2>Contact Us</h2>
+        <div class="contact-info">
+          <div class="contact-item">
+            <i class="fas fa-envelope"></i>
+            <p>support&#64;mindhorizon.com</p>
+          </div>
+          <div class="contact-item">
+            <i class="fas fa-phone"></i>
+            <p>+1 (555) 123-4567</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-section">
+        <h2>Quick Links</h2>
+        <div class="quick-links">
+          <a href="#home" (click)="scrollToSection('home', $event)"><i class="fas fa-chevron-right"></i> Home</a>
+          <a href="#about" (click)="scrollToSection('about', $event)"><i class="fas fa-chevron-right"></i> About Us</a>
+          <a href="#features" (click)="scrollToSection('features', $event)"><i class="fas fa-chevron-right"></i> Services</a>
+          <a href="#testimonials" (click)="scrollToSection('testimonials', $event)"><i class="fas fa-chevron-right"></i> Testimonials</a>
+        </div>
+      </div>
+      
+      <div class="footer-section">
+        <h2>Follow Us</h2>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook" class="social-link">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="#" aria-label="Twitter" class="social-link">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" aria-label="Instagram" class="social-link">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="#" aria-label="LinkedIn" class="social-link">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; 2024 MindHorizon. All rights reserved.</p>
+      <div class="legal-links">
+        <a href="#">Privacy Policy</a>
+        <span>|</span>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+  </footer>
+
+</div>

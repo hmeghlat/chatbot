@@ -1,0 +1,81 @@
+<div class="reports-container">
+    <aside class="reports-sidebar">
+      <div class="logo">
+        <img src="assets/mindhorizon-logo.png" alt="MindHorizon Logo" />
+        <h1 class="gradient-text">MindHorizon</h1>
+      </div>
+      <button (click)="goToChat()" class="nav-btn">
+        <span class="nav-icon">←</span>
+        <span>Back to Chat</span>
+      </button>
+    </aside>
+    
+    <main class="reports-content">
+      <div class="reports-header">
+        <h2 class="page-title">My Reports</h2>
+        <p class="subtitle">Access and download analytics about your mental health journey</p>
+      </div>
+      
+      <div class="reports-grid">
+        <div class="report-section general-report">
+          <div class="report-icon-container">
+            <div class="report-icon">📊</div>
+          </div>
+          <div class="report-details">
+            <h3>General Health Report</h3>
+            <p>This report contains a summary of your activity, daily quizzes, and emotional health progress.</p>
+            <button (click)="generateGeneralReport()" [disabled]="generatingGeneral" class="download-btn">
+              <span *ngIf="!generatingGeneral">
+                <i class="download-icon">↓</i>
+                Download General Report
+              </span>
+              <span *ngIf="generatingGeneral" class="loading-text">
+                <span class="spinner"></span> Generating report...
+              </span>
+            </button>
+          </div>
+        </div>
+  
+        <div class="report-section conversation-reports" *ngIf="conversations.length > 0">
+          <div class="report-icon-container">
+            <div class="report-icon">💬</div>
+          </div>
+          <div class="report-details">
+            <h3>Conversation Reports</h3>
+            <p>Select a conversation to download its report with insights.</p>
+            
+            <div class="conversation-list">
+              <div *ngFor="let conv of conversations" class="conversation-item">
+                <div class="conv-info">
+                  <div class="conv-title">{{ conv.title || 'Conversation on ' + (conv.timestamp | date:'MMM d, yyyy') }}</div>
+                  <div class="conv-date">{{ conv.timestamp | date:'MMM d, yyyy • h:mm a' }}</div>
+                </div>
+                <button (click)="generateConversationReport(conv._id)" 
+                        [disabled]="generatingConvId === conv._id" 
+                        class="conv-download-btn">
+                  <span *ngIf="generatingConvId !== conv._id">
+                    <i class="download-icon">↓</i> Download
+                  </span>
+                  <span *ngIf="generatingConvId === conv._id" class="loading-text">
+                    <span class="spinner"></span> Processing
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+  
+        <div class="no-conversations" *ngIf="conversations.length === 0">
+          <div class="empty-state">
+            <div class="empty-icon">💭</div>
+            <h3 class="empty-title">No Conversations Available</h3>
+            <p class="empty-text">Start a conversation with Hori to unlock reports and insights about your mental health journey.</p>
+            <button (click)="goToChat()" class="action-btn">
+              <span class="action-icon">💬</span> Start a Conversation
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  

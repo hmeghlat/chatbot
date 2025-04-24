@@ -1,0 +1,109 @@
+.account-dialog {
+  background: #f9fafc;
+  padding: 35px 45px;
+  border-radius: 20px;
+  width: 450px;
+  max-width: 95vw;
+  font-family: 'Nunito', sans-serif;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+
+  // Texte global
+  color: #444;
+
+  h2 {
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    // 🌈 Dégradé pour le titre
+    background: linear-gradient(to right, #ddade6, #90c4f2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+  }
+
+  .info-group {
+    margin-bottom: 20px;
+    
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+
+      // Dégradé sur label
+      background: linear-gradient(to right, #ddade6, #90c4f2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 1rem;
+      background: #ffffff;
+      transition: border-color 0.3s;
+
+      &:focus {
+        border-color: #a0c4ff;
+        outline: none;
+      }
+    }
+
+    span {
+      color: #666;
+      font-size: 1rem;
+    }
+  }
+
+  .btn-password {
+    background: #dde7ff;
+    border: none;
+    color: #374fc7;
+    font-weight: bold;
+    padding: 12px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: center;
+    transition: background 0.3s;
+
+    &:hover {
+      background: #ccd9ff;
+    }
+  }
+
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+
+    button {
+      background: linear-gradient(to right, #ddade6, #90c4f2);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s;
+
+      &:hover {
+        transform: translateY(-2px);
+        background: linear-gradient(to right, #cfa0d9, #7bbce7);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+
+}
