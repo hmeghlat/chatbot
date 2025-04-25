@@ -33,22 +33,49 @@ export class QuizComponent implements OnInit {
   quizCompleted: boolean = false;
   previousQuizCompleted: boolean = false;
   userInfo: any = null;
+  isGuestUser: boolean = false;
 
   constructor(private http: HttpClient, private router: Router, private cookieService: CookieService) {}
 
   ngOnInit(): void {
-    this.checkIfQuizCompleted();
-    this.loadUserInfo();
-    this.checkPreviousQuiz();
+    // Vérifier si c'est un utilisateur invité
+    this.checkGuestUser();
+    
+    // Seulement pour les utilisateurs authentifiés (non invités)
+    if (!this.isGuestUser) {
+      this.checkIfQuizCompleted();
+      this.loadUserInfo();
+      this.checkPreviousQuiz();
+    } else {
+      console.log('Guest user detected, skipping API calls to protected endpoints');
+    }
+  }
+  
+  /**
+   * Vérifie si l'utilisateur est en mode invité
+   */
+  checkGuestUser(): void {
+    const token = this.cookieService.get('jwt');
+    const guestToken = this.cookieService.get('guest_session');
+    
+    // C'est un utilisateur invité si: pas de token JWT ou token JWT généré pour un guest ET présence d'un cookie guest_session
+    this.isGuestUser = (!token && !!guestToken) || (!!token && !!guestToken);
+    console.log('Is guest user:', this.isGuestUser);
   }
 
   /**
    * Load user information to pre-fill age and gender
    */
   loadUserInfo(): void {
+    // Ne pas appeler l'API pour les invités
+    if (this.isGuestUser) {
+      console.log('Guest user, skipping user info load');
+      return;
+    }
+
     const token = this.cookieService.get('jwt');
     if (!token) {
-      this.router.navigate(['/login']);
+      console.log('No token found, skipping user info load');
       return;
     }
 
@@ -84,8 +111,15 @@ export class QuizComponent implements OnInit {
    * Check if there are already completed quizzes on the dashboard
    */
   checkPreviousQuiz(): void {
+    // Ne pas appeler l'API pour les invités
+    if (this.isGuestUser) {
+      console.log('Guest user, skipping previous quiz check');
+      return;
+    }
+
     const token = this.cookieService.get('jwt');
-    if (!token || token.startsWith('guest_')) {
+    if (!token) {
+      console.log('No token found, skipping previous quiz check');
       return;
     }
 
@@ -114,9 +148,15 @@ export class QuizComponent implements OnInit {
    * Check if the user has already completed today's quiz
    */
   checkIfQuizCompleted(): void {
+    // Ne pas appeler l'API pour les invités
+    if (this.isGuestUser) {
+      console.log('Guest user, skipping quiz completion check');
+      return;
+    }
+
     const token = this.cookieService.get('jwt');
     if (!token) {
-      this.router.navigate(['/login']);
+      console.log('No token found, skipping quiz completion check');
       return;
     }
 
@@ -202,10 +242,27 @@ export class QuizComponent implements OnInit {
     this.errorMessage = '';
     
     const token = this.cookieService.get('jwt');
+    const guestToken = this.cookieService.get('guest_session');
+    
+    console.log('Submit quiz - JWT token exists:', !!token);
+    console.log('Submit quiz - Guest token exists:', !!guestToken);
 
+    // Pour les invités, on crée une expérience de quiz en mode guest
     if (!token) {
-      this.errorMessage = "Unable to send quiz without token";
-      this.submitting = false;
+      console.log("Guest user submitting quiz - redirecting to chat in 2 seconds");
+      // Simuler une soumission réussie pour les invités
+      this.quizCompleted = true;
+      
+      // Mettre la redirection dans une fonction séparée pour le déboguer plus facilement
+      const navigateToChat = () => {
+        console.log('Guest navigation to chat triggered');
+        this.router.navigate(['/chat']).then(
+          success => console.log('Navigation success:', success),
+          error => console.error('Navigation error:', error)
+        );
+      };
+      
+      setTimeout(navigateToChat, 2000);
       return;
     }
 

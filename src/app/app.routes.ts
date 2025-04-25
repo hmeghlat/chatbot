@@ -10,7 +10,8 @@ import { ReportsComponent } from './report/report.component';
 import { JournalComponent } from './journal/journal.component';
 
 export const routes: Routes = [
-  { path: '', component: LandingPageComponent }, // Page d'accueil
+  { path: '', pathMatch: 'full', component: LandingPageComponent }, // Route racine affiche directement la page d'accueil
+  { path: 'landing', component: LandingPageComponent }, // Page d'accueil
   { path: 'login', component: LoginComponent },
   { path: 'quiz', component: QuizComponent, canActivate: [GuestGuard] },
   { path: 'chat', component: ChatComponent, canActivate: [AuthGuard] },
@@ -18,5 +19,5 @@ export const routes: Routes = [
   { path: 'reports', component: ReportsComponent, canActivate: [AuthGuard] },
   {path: 'journal', component:JournalComponent},
 
-  { path: '**', redirectTo: 'login' } // Route fallback
+  { path: '**', redirectTo: '' } // Route fallback vers la racine
 ];

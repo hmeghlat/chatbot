@@ -45,7 +45,7 @@
                 <span>Get Started Now</span>
                 <i class="fas fa-arrow-right"></i>
             </button>
-            <button class="secondary-btn">
+            <button class="secondary-btn" (click)="requestRules()">
                 <span>Explore as Guest </span>
                 <i class="fas fa-external-link-alt"></i>
             </button>
@@ -360,5 +360,8 @@
       </div>
     </div>
   </footer>
+
+  <!-- Privacy Policy Dialog -->
+  <app-confidentiality-dialog *ngIf="showPrivacyPolicyDialog" (accepted)="onPrivacyPolicyResponse($event)"></app-confidentiality-dialog>
 
 </div>

@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { ConfidentialityService } from '../services/confidentiality.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-confidentiality-dialog',
@@ -10,8 +11,10 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule // 👈 n'oublie pas ça !
+    FormsModule,
+    HttpClientModule
   ],
+  providers: [ConfidentialityService]
 })
 export class ConfidentialityDialogComponent implements OnInit {
   policyText: string = '';
@@ -32,7 +35,7 @@ export class ConfidentialityDialogComponent implements OnInit {
       },
       error => {
         console.error('Error loading privacy policy', error);
-        this.policyText = 'Error loading privacy policy. Please try again later.';
+        this.policyText = 'En utilisant notre plateforme, vous acceptez notre politique de confidentialité qui garantit la protection de vos données personnelles. Nous utilisons vos données uniquement pour améliorer votre expérience et nous ne les partageons jamais avec des tiers sans votre consentement explicite.';
       }
     );
   }

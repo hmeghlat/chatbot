@@ -13,11 +13,17 @@ export class AuthGuard implements CanActivate {
   canActivate(): boolean {
     // Utilisation de la clé "jwt" pour récupérer le token
     const token = this.cookieService.get('jwt');
+    // Vérifier si l'utilisateur a un token invité
+    const guestToken = this.cookieService.get('guest_session');
+    
+    console.log('AuthGuard - JWT token exists:', !!token);
+    console.log('AuthGuard - Guest token exists:', !!guestToken);
 
-    if (token && !this.isTokenExpired(token)) {
+    // Accepter les utilisateurs authentifiés ET les invités ayant complété le quiz
+    if ((token && !this.isTokenExpired(token)) || guestToken) {
       return true;
     } else {
-      this.router.navigate(['/login']); // Redirige si le token est invalide ou absent
+      this.router.navigate(['/landing']); // Redirige vers landing page si le token est invalide ou absent
       return false;
     }
   }

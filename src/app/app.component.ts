@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { RouterOutlet, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,6 +9,15 @@ import { CommonModule } from '@angular/common';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'chatbot-mental';
+  
+  constructor(private router: Router) {}
+  
+  ngOnInit() {
+    // Vérifier si nous sommes à la racine et forcer la redirection vers landing page
+    if (window.location.pathname === '/' || window.location.pathname === '') {
+      this.router.navigate(['/landing']);
+    }
+  }
 }

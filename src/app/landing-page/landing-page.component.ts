@@ -2,6 +2,10 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import {NgIf} from '@angular/common';
 import {FormsModule} from '@angular/forms';
+import { ConfidentialityDialogComponent } from '../components/privacy-policy.component';
+import { CookieService } from 'ngx-cookie-service';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-landing-page',
@@ -9,15 +13,24 @@ import {FormsModule} from '@angular/forms';
   templateUrl: './landing-page.component.html',
   imports: [
     NgIf,
-    FormsModule
+    FormsModule,
+    ConfidentialityDialogComponent,
+    HttpClientModule
   ],
+  providers: [CookieService],
   styleUrls: ['./landing-page.component.scss']
 })
 export class LandingPageComponent implements OnInit {
   isNavbarScrolled = false;
   isMobileMenuOpen = false;
+  showPrivacyPolicyDialog = false;
+  private BASE_URL = 'http://127.0.0.1:5000';
 
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router, 
+    private cookieService: CookieService,
+    private http: HttpClient
+  ) { }
 
   ngOnInit() {
     this.checkSections();
@@ -74,14 +87,49 @@ export class LandingPageComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
- /* requestRules() {
-    this.showRgpdModal = true;
+  requestRules() {
+    this.showPrivacyPolicyDialog = true;
   }
 
-  validateRgpd() {
-    if(this.rgpdAccepted) {
-      this.router.navigate(['/quizz']);
-      this.showRgpdModal = false;
+  onPrivacyPolicyResponse(accepted: boolean) {
+    this.showPrivacyPolicyDialog = false;
+    if(accepted) {
+      // Créer un cookie de session pour les invités
+      const guestToken = `guest_${new Date().getTime()}`;
+      this.cookieService.set('guest_session', guestToken, { expires: 1, path: '/' }); // Expire après 1 jour
+      
+      // Enregistrer l'utilisateur invité sur le serveur pour obtenir un token JWT
+      this.registerGuestUser().then(() => {
+        console.log('Navigating to quiz after privacy policy acceptance and guest registration');
+        this.router.navigate(['/quiz']);
+      }).catch(error => {
+        console.error('Error during guest registration:', error);
+        // Continuer vers le quiz même en cas d'erreur
+        this.router.navigate(['/quiz']);
+      });
     }
-  }*/
+  }
+
+  // Enregistrer un utilisateur invité et obtenir un token JWT
+  private registerGuestUser(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.http.post<any>(`${this.BASE_URL}/guest`, {}).subscribe({
+        next: (response) => {
+          if (response && response.access_token) {
+            // Stocker le token JWT temporaire
+            this.cookieService.set('jwt', response.access_token, { path: '/' });
+            console.log('Guest token registered and stored');
+            resolve();
+          } else {
+            console.warn('Guest registration response did not contain access_token', response);
+            resolve(); // Continuer même si le format de la réponse n'est pas celui attendu
+          }
+        },
+        error: (error) => {
+          console.error('Failed to register guest user:', error);
+          reject(error);
+        }
+      });
+    });
+  }
 }
