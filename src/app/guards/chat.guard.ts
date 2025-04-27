@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
     const token = this.cookieService.get('jwt');
     // Vérifier si l'utilisateur a un token invité
     const guestToken = this.cookieService.get('guest_session');
-    
+
     console.log('AuthGuard - JWT token exists:', !!token);
     console.log('AuthGuard - Guest token exists:', !!guestToken);
 

@@ -16,9 +16,9 @@ export class GuestGuard implements CanActivate {
     // Vérifier si l'utilisateur a un JWT token ou un cookie de session invité
     const hasJwtToken = !!this.cookieService.get('jwt');
     const hasGuestSession = !!this.cookieService.get('guest_session');
-    
+
     console.log('GuestGuard - hasJwtToken:', hasJwtToken, 'hasGuestSession:', hasGuestSession);
-    
+
     // L'utilisateur peut accéder au quiz s'il a un token JWT valide ou une session invité
     if (hasJwtToken || hasGuestSession) {
       return true;
