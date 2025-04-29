@@ -5,6 +5,7 @@ import {FormsModule} from '@angular/forms';
 import { ConfidentialityDialogComponent } from '../components/privacy-policy.component';
 import { CookieService } from 'ngx-cookie-service';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { ChatSessionService } from '../services/chat-session.service';
 
 
 @Component({
@@ -29,7 +30,8 @@ export class LandingPageComponent implements OnInit {
   constructor(
     private router: Router, 
     private cookieService: CookieService,
-    private http: HttpClient
+    private http: HttpClient,
+    private sessionService: ChatSessionService
   ) { }
 
   ngOnInit() {
@@ -93,42 +95,40 @@ export class LandingPageComponent implements OnInit {
 
   onPrivacyPolicyResponse(accepted: boolean) {
     this.showPrivacyPolicyDialog = false;
-    if(accepted) {
-      // Créer un cookie de session pour les invités
-      const guestToken = `guest_${new Date().getTime()}`;
-      this.cookieService.set('guest_session', guestToken, { expires: 1, path: '/' }); // Expire après 1 jour
-      
-      // Enregistrer l'utilisateur invité sur le serveur pour obtenir un token JWT
-      this.registerGuestUser().then(() => {
-        console.log('Navigating to quiz after privacy policy acceptance and guest registration');
-        this.router.navigate(['/quiz']);
-      }).catch(error => {
-        console.error('Error during guest registration:', error);
-        // Continuer vers le quiz même en cas d'erreur
-        this.router.navigate(['/quiz']);
-      });
+    if (accepted) {
+      // 1) Créer un cookie de session pour le front (facultatif)
+      const guestToken = `guest_${Date.now()}`;
+      this.cookieService.set('guest_session', guestToken, { expires: 1, path: '/' });
+
+      // 2) Enregistrer l'utilisateur invité côté back (pour obtenir JWT)
+      this.registerGuestUser()
+        .then(() => {
+          // 3) Passer le ChatSessionService en mode “guest”
+          this.sessionService.setGuestMode(true);       // ←
+          // 4) Naviguer
+          this.router.navigate(['/quiz']);
+        })
+        .catch(_ => {
+          // même en cas d’erreur, on reste en guest
+          this.sessionService.setGuestMode(true);       // ←
+          this.router.navigate(['/quiz']);
+        });
     }
   }
+
 
   // Enregistrer un utilisateur invité et obtenir un token JWT
   private registerGuestUser(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.http.post<any>(`${this.BASE_URL}/guest`, {}).subscribe({
-        next: (response) => {
-          if (response && response.access_token) {
-            // Stocker le token JWT temporaire
-            this.cookieService.set('jwt', response.access_token, { path: '/' });
-            console.log('Guest token registered and stored');
-            resolve();
-          } else {
-            console.warn('Guest registration response did not contain access_token', response);
-            resolve(); // Continuer même si le format de la réponse n'est pas celui attendu
+        next: resp => {
+          if (resp.access_token) {
+            this.cookieService.set('jwt', resp.access_token, { path: '/' });
+            this.sessionService.setGuestMode(true);
           }
+          resolve();
         },
-        error: (error) => {
-          console.error('Failed to register guest user:', error);
-          reject(error);
-        }
+        error: err => reject(err)
       });
     });
   }

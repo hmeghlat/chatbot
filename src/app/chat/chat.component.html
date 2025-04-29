@@ -6,9 +6,9 @@
       <h1 class="gradient-text">MindHorizon</h1>
     </div>
 
-    <button *ngIf="!isGuestUser" class="btn" (click)="goToFeed()"> My Feed</button>
-    <button *ngIf="!isGuestUser" class="btn" (click)="goToReports()">My Reports</button>
-    <button *ngIf="!isGuestUser" class="btn" (click)="goToJournal()">My Journal</button>
+    <button class="btn" (click)="goToFeed()"    [disabled]="isGuest">My Feed</button>
+    <button class="btn" (click)="goToReports()" [disabled]="isGuest">My Reports</button>
+    <button class="btn" (click)="goToJournal()" [disabled]="isGuest">My Journal</button>
     <button class="btn" (click)="startNewChat()">➕ New Chat</button>
 
     <div class="chat-history">
@@ -28,10 +28,7 @@
       </div>
     </div>
 
-    <div class="sidebar-footer">
-      <button class="settings-btn">⚙ Settings</button>
-      <button class="about-btn">ℹ About</button>
-    </div>
+    
   </aside>
 
   <!-- Main Chat -->
@@ -40,13 +37,11 @@
     <div class="chat-header">
       <h2>Hori chatbot</h2>
       <div class="chat-actions">
-        <button *ngIf="!isGuestUser" class="account-btn" (click)="openAccountDialog()">👤 Account</button>
-        <button *ngIf="!isGuestUser" class="account-btn" (click)="generateGeneralReport()" [disabled]="generatingReport">
+        <button class="account-btn" (click)="openAccountDialog()">👤 Account</button>
+        <button class="account-btn" (click)="generateGeneralReport()"  [disabled]="isGuest || generatingReport">
           {{ generatingReport ? '⏳ Generating...' : '📥 General Report' }}
         </button>
-        <button class="logout-btn" (click)="logout()">
-          {{ isGuestUser ? '🏠 Back to Home' : '🚪 Logout' }}
-        </button>
+        <button class="logout-btn" (click)="logout()">🚪 Logout</button>
       </div>
     </div>
 
@@ -72,7 +67,6 @@
         <div class="archived-actions">
           <button class="return-btn" (click)="exitArchivedView()">🔄 Return to a new chat</button>
           <button 
-            *ngIf="!isGuestUser"
             class="report-btn" 
             (click)="generateConversationReport()" 
             [disabled]="generatingReport">

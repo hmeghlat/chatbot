@@ -71,6 +71,42 @@ export class JournalComponent implements OnInit {
   entryText: string = '';
   entries: JournalEntry[] = [];
 
+  // Gestion des sections déroulables
+  expandedSections: { [key: string]: boolean } = {
+    'entry': true,
+    'emotions': true,
+    'associations': true, 
+    'tenwords': true,
+    'kingdom': true,
+    'motivation': true,
+    'goals': true,
+    'resolutions': true,
+    'projection': true
+  };
+
+  // Pour la gestion de la sélection des snapshots
+  selectedSnapshots: { [key: string]: number[] } = {
+    'entry': [],
+    'emotions': [],
+    'associations': [],
+    'tenwords': [],
+    'kingdom': [],
+    'motivation': [],
+    'goals': [],
+    'resolutions': [],
+    'projection': []
+  };
+
+  // Méthode pour vérifier si une section est déroulée
+  isSectionExpanded(sectionId: string): boolean {
+    return !!this.expandedSections[sectionId];
+  }
+
+  // Méthode pour basculer l'état d'une section
+  toggleSection(sectionId: string): void {
+    this.expandedSections[sectionId] = !this.expandedSections[sectionId];
+  }
+
   emotionsList = [
     { prompt: 'I am angry because', response: '' },
     { prompt: 'What annoys me is', response: '' },
@@ -89,7 +125,11 @@ export class JournalComponent implements OnInit {
   currentWord: string = '';
   maxWords: number = 10;
 
-  
+  // Pour la projection à 10 ans
+  projection: string[] = [];
+  currentProjection: string = '';
+  maxProjections: number = 10;
+
   kingdomOfThree: KingdomOfThree = {
     thingsILikeAboutMe: ['', '', ''],
     thingsIWantToChangeAboutMe: ['', '', ''],
@@ -156,23 +196,34 @@ goalsTitles: string[] = [
   'Friendship goal:','Career goal:','Creative goal:'
 ];
 
-  projection = Array.from({ length: 10 }, () => '');
-
-  //liste d’entrées guidées
+  projectionEntries: { date: Date; data: string[] }[] = [];
+  tenWordsEntries: WordsSnapshot[] = [];
+  
+  //liste d'entrées guidées
   emotionEntries: { date: Date; responses: string[] }[] = [];
   associationEntries: { date: Date; responses: string[] }[] = [];
   kingdomEntries: { date: Date; data: KingdomOfThree }[] = [];
   motivationEntries: { date: Date; data: MotivationData }[] = [];
   goalsEntries: { date: Date; data: GoalsData }[] = [];
   resolutionsEntries: { date: Date; data: ResolutionsData }[] = [];
-  projectionEntries: { date: Date; data: string[] }[] = [];
-  tenWordsEntries: WordsSnapshot[] = [];
-  
 
   
     constructor(
       private router: Router,
-    ) {}
+    ) {
+      // Pour la gestion de la sélection des snapshots
+      this.selectedSnapshots = {
+        'entry': [],
+        'emotions': [],
+        'associations': [],
+        'tenwords': [],
+        'kingdom': [],
+        'motivation': [],
+        'goals': [],
+        'resolutions': [],
+        'projection': []
+      };
+    }
   
 
 
@@ -224,7 +275,7 @@ goalsTitles: string[] = [
       .map((e: any) => ({ date: new Date(e.date), data: e.data as GoalsData }));
   }
 
-  // (Optionnel) recharge l’état courant
+  // (Optionnel) recharge l'état courant
   const savedObj = localStorage.getItem('objectives');
   if (savedObj) {
     this.objectives = JSON.parse(savedObj);
@@ -237,7 +288,7 @@ goalsTitles: string[] = [
       .map((e: any) => ({ date: new Date(e.date), data: e.data as ResolutionsData }));
   }
 
-  // (Optionnel) recharge l’état courant
+  // (Optionnel) recharge l'état courant
   const savedRes = localStorage.getItem('resolutions');
   if (savedRes) {
     this.resolutions = JSON.parse(savedRes);
@@ -254,7 +305,7 @@ goalsTitles: string[] = [
     this.tenWords = JSON.parse(savedList);
   }
 
-  // reload de l’historique
+  // reload de l'historique
   const rawEntries = localStorage.getItem('tenWordsEntries');
   if (rawEntries) {
     this.tenWordsEntries = JSON.parse(rawEntries)
@@ -303,12 +354,12 @@ removeWord(index: number): void {
 saveWords(): void {
   // construit un clone de la liste courante
   const snapshot = [...this.tenWords];
-  // ajoute en tête de l’historique
+  // ajoute en tête de l'historique
   this.tenWordsEntries.unshift({
     date: new Date(),
     data: snapshot
   });
-  // persiste l’historique + la liste courante
+  // persiste l'historique + la liste courante
   localStorage.setItem('tenWordsEntries', JSON.stringify(this.tenWordsEntries));
   localStorage.setItem('journalTenWords', JSON.stringify(this.tenWords));
 
@@ -323,7 +374,7 @@ resetWords(): void {
   this.currentWord = '';
   localStorage.removeItem('journalTenWords');
 
-  // reset de l’historique
+  // reset de l'historique
   this.tenWordsEntries = [];
   localStorage.removeItem('tenWordsEntries');
 }
@@ -347,7 +398,7 @@ resetWords(): void {
       { prompt: 'What annoys me is', response: '' },
       { prompt: 'I am frustrated due to', response: '' }
     ];
-    // et on vide l’historique
+    // et on vide l'historique
     this.emotionEntries = [];
     localStorage.removeItem('emotionsList');
     localStorage.removeItem('emotionEntries');
@@ -362,7 +413,7 @@ resetWords(): void {
       date: new Date(),
       responses: this.associations.map(a => a.response)
     });
-    // On stocke aussi l’historique complet
+    // On stocke aussi l'historique complet
     localStorage.setItem('associationEntries', JSON.stringify(this.associationEntries));
 
     this.associations.forEach(a => a.response = '');
@@ -383,7 +434,7 @@ resetWords(): void {
 
   // Kingdom
   saveKingdomOfThree(): void {
-    // Deep‐clone de kingdomOfThree
+    // Deep-clone de kingdomOfThree
     const snapshotData: KingdomOfThree = {
       thingsILikeAboutMe: [...this.kingdomOfThree.thingsILikeAboutMe],
       thingsIWantToChangeAboutMe: [...this.kingdomOfThree.thingsIWantToChangeAboutMe],
@@ -392,13 +443,13 @@ resetWords(): void {
       thingsIWantToChangeInLife: [...this.kingdomOfThree.thingsIWantToChangeInLife],
     };
   
-    // On insère ce clone dans l’historique
+    // On insère ce clone dans l'historique
     this.kingdomEntries.unshift({
       date: new Date(),
       data: snapshotData
     });
   
-    // On persiste l’historique et l’état courant si besoin
+    // On persiste l'historique et l'état courant si besoin
     localStorage.setItem('kingdomEntries', JSON.stringify(this.kingdomEntries));
     localStorage.setItem('kingdomOfThree', JSON.stringify(this.kingdomOfThree));
 
@@ -430,7 +481,7 @@ resetWords(): void {
 
   // Motivation
   saveMotivation(): void {
-    // deep clone de l’objet motivation
+    // deep clone de l'objet motivation
     const snapshot: MotivationData = JSON.parse(JSON.stringify(this.motivation));
     this.motivationEntries.unshift({ date: new Date(), data: snapshot });
     localStorage.setItem('motivationEntries', JSON.stringify(this.motivationEntries));
@@ -473,7 +524,7 @@ resetWords(): void {
 
   // Résolutions
   saveResolutions(): void {
-    // Deep-clone de l’objet résolutions
+    // Deep-clone de l'objet résolutions
     const snapshot: ResolutionsData = JSON.parse(JSON.stringify(this.resolutions));
     
     // On ajoute en tête du tableau
@@ -482,7 +533,7 @@ resetWords(): void {
       data: snapshot
     });
   
-    // On persiste l’historique et l’état courant
+    // On persiste l'historique et l'état courant
     localStorage.setItem('resolutionsEntries', JSON.stringify(this.resolutionsEntries));
     localStorage.setItem('resolutions', JSON.stringify(this.resolutions));
 
@@ -492,11 +543,11 @@ resetWords(): void {
     localStorage.removeItem('resolutions');
   }
   resetResolutions(): void {
-    // On efface les champs “live”
+    // On efface les champs "live"
     Object.keys(this.resolutions)
       .forEach(k => (this.resolutions as any)[k] = '');
   
-    // On vide l’historique
+    // On vide l'historique
     this.resolutionsEntries = [];
   
     // On supprime du localStorage
@@ -506,6 +557,18 @@ resetWords(): void {
   
 
   // Projection
+  addProjection(): void {
+    const trimmed = this.currentProjection.trim();
+    if (trimmed && this.projection.length < this.maxProjections) {
+      this.projection.push(trimmed);
+      this.currentProjection = '';
+    }
+  }
+
+  removeProjection(index: number): void {
+    this.projection.splice(index, 1);
+  }
+
   saveProjection(): void {
     // clone profond du tableau actuel
     const snapshot = [...this.projection];
@@ -518,11 +581,14 @@ resetWords(): void {
     localStorage.setItem('projection10Years', JSON.stringify(this.projection));
 
     // reset live
-  this.projection = Array.from({ length: 10 }, () => '');
-  localStorage.removeItem('projection10Years');
+    this.projection = [];
+    this.currentProjection = '';
+    localStorage.removeItem('projection10Years');
   }
+
   resetProjection(): void {
-    this.projection = Array.from({ length: 10 }, () => '');
+    this.projection = [];
+    this.currentProjection = '';
     this.projectionEntries = [];
     localStorage.removeItem('projection10Years');
     localStorage.removeItem('projectionEntries');
@@ -530,5 +596,113 @@ resetWords(): void {
 
   goToChat() {
     this.router.navigate(['/chat']);
+  }
+
+  // Méthode pour vérifier si un snapshot est sélectionné
+  isSnapshotSelected(section: string, idx: number): boolean {
+    return this.selectedSnapshots[section].includes(idx);
+  }
+
+  // Méthode pour basculer la sélection d'un snapshot
+  toggleSnapshotSelection(sectionId: string, index: number): void {
+    const selectedIndices = this.selectedSnapshots[sectionId];
+    
+    if (selectedIndices.includes(index)) {
+      // Si déjà sélectionné, le désélectionner
+      this.selectedSnapshots[sectionId] = selectedIndices.filter(idx => idx !== index);
+    } else {
+      // Sinon, l'ajouter à la sélection
+      selectedIndices.push(index);
+    }
+  }
+
+  // Méthode pour supprimer les snapshots sélectionnés
+  deleteSelectedSnapshots(sectionId: string): void {
+    // Trier les indices par ordre décroissant pour éviter les problèmes lors de la suppression
+    const indicesToDelete = [...this.selectedSnapshots[sectionId]].sort((a, b) => b - a);
+    
+    if (indicesToDelete.length === 0) return;
+
+    // Supprimer les snapshots selon la section
+    switch (sectionId) {
+      case 'entry':
+        indicesToDelete.forEach(index => this.entries.splice(index, 1));
+        localStorage.setItem('journalEntries', JSON.stringify(this.entries));
+        break;
+      case 'emotions':
+        indicesToDelete.forEach(index => this.emotionEntries.splice(index, 1));
+        localStorage.setItem('emotionEntries', JSON.stringify(this.emotionEntries));
+        break;
+      case 'associations':
+        indicesToDelete.forEach(index => this.associationEntries.splice(index, 1));
+        localStorage.setItem('associationEntries', JSON.stringify(this.associationEntries));
+        break;
+      case 'tenwords':
+        indicesToDelete.forEach(index => this.tenWordsEntries.splice(index, 1));
+        localStorage.setItem('tenWordsEntries', JSON.stringify(this.tenWordsEntries));
+        break;
+      case 'kingdom':
+        indicesToDelete.forEach(index => this.kingdomEntries.splice(index, 1));
+        localStorage.setItem('kingdomEntries', JSON.stringify(this.kingdomEntries));
+        break;
+      case 'motivation':
+        indicesToDelete.forEach(index => this.motivationEntries.splice(index, 1));
+        localStorage.setItem('motivationEntries', JSON.stringify(this.motivationEntries));
+        break;
+      case 'goals':
+        indicesToDelete.forEach(index => this.goalsEntries.splice(index, 1));
+        localStorage.setItem('goalsEntries', JSON.stringify(this.goalsEntries));
+        break;
+      case 'resolutions':
+        indicesToDelete.forEach(index => this.resolutionsEntries.splice(index, 1));
+        localStorage.setItem('resolutionsEntries', JSON.stringify(this.resolutionsEntries));
+        break;
+      case 'projection':
+        indicesToDelete.forEach(index => this.projectionEntries.splice(index, 1));
+        localStorage.setItem('projectionEntries', JSON.stringify(this.projectionEntries));
+        break;
+    }
+    
+    // Réinitialiser la sélection pour cette section
+    this.selectedSnapshots[sectionId] = [];
+  }
+
+  selectedEntries: { [key: string]: boolean } = {};
+  selectedCount: number = 0;
+
+  toggleSelection(entryId: string): void {
+    if (this.selectedEntries[entryId]) {
+      delete this.selectedEntries[entryId];
+      this.selectedCount--;
+    } else {
+      this.selectedEntries[entryId] = true;
+      this.selectedCount++;
+    }
+  }
+
+  isSelected(entryId: string): boolean {
+    return !!this.selectedEntries[entryId];
+  }
+
+  deleteSelectedEntries(): void {
+    if (this.selectedCount === 0) return;
+
+    // Filter emotional journal entries
+    this.emotionEntries = this.emotionEntries.filter(entry => !this.selectedEntries[entry.date.toISOString()]);
+    
+    // Filter guided emotions
+    this.associationEntries = this.associationEntries.filter(entry => !this.selectedEntries[entry.date.toISOString()]);
+    
+    // Filter projection journal entries
+    this.projectionEntries = this.projectionEntries.filter(entry => !this.selectedEntries[entry.date.toISOString()]);
+    
+    // Save updated journals to localStorage
+    localStorage.setItem('emotionEntries', JSON.stringify(this.emotionEntries));
+    localStorage.setItem('associationEntries', JSON.stringify(this.associationEntries));
+    localStorage.setItem('projectionEntries', JSON.stringify(this.projectionEntries));
+    
+    // Reset selection
+    this.selectedEntries = {};
+    this.selectedCount = 0;
   }
 }

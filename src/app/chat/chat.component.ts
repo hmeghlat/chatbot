@@ -46,7 +46,7 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
   conversationFinalized = false;
   viewingArchived = false;
   generatingReport = false;
-  isGuestUser: boolean = false;
+
 
   conversationList: { conversation_id: string; timestamp: string; title?: string }[] = [];
   selectedConversationId: string | null = null;
@@ -64,59 +64,46 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
     private cookieService: CookieService,
     private cdr: ChangeDetectorRef,
     private zone: NgZone
+    
   ) {}
 
+  public get isGuest(): boolean {
+    return this.sessionService.isGuestMode();
+  }
   /** 1. On restore tout en OnInit */
   ngOnInit(): void {
-    this.messages = this.sessionService.getMessages();
-    this.wordCount = this.sessionService.getWordCount();
-    this.conversationFinalized = this.sessionService.isConversationFinalized();
+    // 1) Restaurer l’état de la session (messages + état finalize)
+    this.messages               = this.sessionService.getMessages();
+    this.conversationFinalized  = this.sessionService.isConversationFinalized();
     this.selectedConversationId = this.sessionService.getConversationId();
-
-    // Vérifier si c'est un utilisateur invité
-    const token = this.cookieService.get('jwt');
-    const guestToken = this.cookieService.get('guest_session');
-    
-    // Considérer comme invité si pas de token JWT ou si token JWT mais aussi un cookie guest_session
-    this.isGuestUser = (!token && !!guestToken) || (!!token && !!guestToken);
-    console.log('Is guest user:', this.isGuestUser);
-    
-    // Enregistrer l'utilisateur invité au démarrage pour obtenir un token JWT
-    if (!token && guestToken) {
-      console.log('Guest user detected, registering with server');
-      this.chatService.registerGuestUser().subscribe({
-        next: (response) => {
-          console.log('Guest registered successfully', response);
-        },
-        error: (err) => {
-          console.error('Error registering guest user', err);
-          // Afficher un message convivial
-          this._appendBotMessage("Welcome! I'm here to chat with you. You're using the guest mode - no conversations will be saved.");
-        }
-      });
+    this.wordCount              = this.sessionService.getWordCount();
+  
+    // 2) Si on est en mode invité, injecter un message d’avertissement
+    if (this.sessionService.isGuestMode()) {
+      this._appendBotMessage(
+        "👋 Welcome! You're in guest mode – your chats won't be saved."
+      );
     }
   }
 
   /** 2. On injecte *seulement* le message de bienvenue ici */
   ngAfterContentInit(): void {
     if (this.messages.length === 0) {
-      // micro‑tâche pour éviter NG0100
-      Promise.resolve().then(() => this._appendBotMessage(
-        "Hello! How have you been feeling lately?"
-      ));
+      Promise.resolve().then(() =>
+        this._appendBotMessage("Hello! How have you been feeling lately?")
+      );
     }
   }
 
   /** 3. Après que le contenu est monté, on scroll et on charge l'historique */
   ngAfterViewInit(): void {
     this._scrollToBottom();
-    // Vérifier si c'est un utilisateur invité avant de charger l'historique
     const token = this.cookieService.get('jwt');
-    const guestToken = this.cookieService.get('guest_session');
-    
-    // Si c'est un utilisateur invité (pas de JWT mais un guest_session), ne pas charger l'historique
-    if (!token && guestToken) {
-      console.log('Guest user detected, skipping conversation history');
+    const guest = this.cookieService.get('guest_session');
+
+    // Si guest, on ne recharge pas l’historique
+    if (!token && guest) {
+      console.log('Guest user – skipping history load');
     } else {
       this.loadConversations();
     }
@@ -161,7 +148,7 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
 
     const wc = text.split(/\s+/).length;
     if (this.wordCount + wc > this.wordLimit) {
-      this._appendBotMessage("⚠️ You've reached the 400‑word limit.");
+      this._appendBotMessage("⚠️ You've reached the 400-word limit.");
       return;
     }
 
@@ -170,7 +157,7 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
     this.typing = true;
 
     this.chatService.sendMessage(text, finalize).subscribe({
-      next: res => {
+      next: (res) => {
         this.typing = false;
         if (res.response) {
           this._appendBotMessage(res.response);
@@ -178,7 +165,6 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
             this.conversationFinalized = true;
             if (res.conversation_id) {
               this.selectedConversationId = res.conversation_id;
-              // Ne pas charger les conversations pour les invités
               const isGuest = !this.cookieService.get('jwt') && !!this.cookieService.get('guest_session');
               if (!isGuest) {
                 this.loadConversations();
@@ -193,15 +179,14 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
       error: (err) => {
         console.error("Error sending message:", err);
         this.typing = false;
-        
-        // Vérifier si c'est un invité sans droits d'accès à l'API
         const isGuest = !this.cookieService.get('jwt') && !!this.cookieService.get('guest_session');
         if (isGuest) {
-          this._appendBotMessage("I'm here to help! As a guest user, you can chat with me here, but to save conversations and access other features, please sign up for an account.");
+          this._appendBotMessage(
+            "I'm here to help! As a guest user, you can chat with me here, but to save conversations and access other features, please sign up for an account."
+          );
         } else {
           this._appendBotMessage("❌ Server error while processing your message.");
         }
-        
         this._saveSession();
       }
     });
@@ -213,7 +198,7 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
 
     this.typing = true;
     this.chatService.sendMessage(last.text, true).subscribe({
-      next: res => {
+      next: (res) => {
         this.typing = false;
         if (res.response) {
           this._appendBotMessage(res.response);
@@ -221,7 +206,6 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
             this.conversationFinalized = true;
             if (res.conversation_id) {
               this.selectedConversationId = res.conversation_id;
-              // Ne pas charger les conversations pour les invités
               const isGuest = !this.cookieService.get('jwt') && !!this.cookieService.get('guest_session');
               if (!isGuest) {
                 this.loadConversations();
@@ -236,16 +220,15 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
       error: (err) => {
         console.error("Error finalizing conversation:", err);
         this.typing = false;
-        
-        // Vérifier si c'est un invité sans droits d'accès à l'API
         const isGuest = !this.cookieService.get('jwt') && !!this.cookieService.get('guest_session');
         if (isGuest) {
-          this._appendBotMessage("Thank you for chatting! To save this conversation, please sign up for an account.");
+          this._appendBotMessage(
+            "Thank you for chatting! To save this conversation, please sign up for an account."
+          );
           this.conversationFinalized = true;
         } else {
           this._appendBotMessage("❌ Server error while finalizing.");
         }
-        
         this._saveSession();
       }
     });
@@ -255,28 +238,24 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
     if (!this.selectedConversationId || !this.conversationFinalized) return;
     this.generatingReport = true;
     this._appendBotMessage("⏳ Generating report…");
-    this.reportService.generateConversationReport(this.selectedConversationId)
-      .subscribe({
-        next: blob => {
-          this.reportService.downloadReport(
-            blob,
-            `conversation_${this.selectedConversationId}.pdf`
-          );
-          this._appendBotMessage("✅ Report downloaded!");
-          this.generatingReport = false;
-        },
-        error: () => {
-          this.generatingReport = false;
-          this._appendBotMessage("❌ Failed to generate report.");
-        }
-      });
+    this.reportService.generateConversationReport(this.selectedConversationId).subscribe({
+      next: (blob) => {
+        this.reportService.downloadReport(blob, `conversation_${this.selectedConversationId}.pdf`);
+        this._appendBotMessage("✅ Report downloaded!");
+        this.generatingReport = false;
+      },
+      error: () => {
+        this.generatingReport = false;
+        this._appendBotMessage("❌ Failed to generate report.");
+      }
+    });
   }
 
   generateGeneralReport() {
     this.generatingReport = true;
     this._appendBotMessage("⏳ Generating general report…");
     this.reportService.generateGeneralReport().subscribe({
-      next: blob => {
+      next: (blob) => {
         this.reportService.downloadReport(blob, `general_report.pdf`);
         this._appendBotMessage("✅ General report downloaded!");
         this.generatingReport = false;
@@ -293,18 +272,15 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
     if (!token) return;
     this.http.get<any>('http://127.0.0.1:5000/account', {
       headers: { Authorization: `Bearer ${token}` }
-    }).subscribe(userInfo => {
+    }).subscribe((userInfo) => {
       this.dialog.open(AccountDialogComponent, { data: userInfo });
     });
   }
 
   viewConversation(convId: string) {
     this.chatService.getConversationById(convId).subscribe({
-      next: conv => {
-        // 1) Récupère la liste des messages depuis le serveur
+      next: (conv) => {
         this.messages = conv.messages;
-  
-        // 2) Garantit la présence de la salutation en premier
         const greeting = "Hello! How have you been feeling lately?";
         if (
           this.messages.length === 0 ||
@@ -313,20 +289,15 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
         ) {
           this.messages.unshift({ text: greeting, sender: 'bot' });
         }
-  
-        // 3) Passe en mode lecture seule
         this.selectedConversationId = convId;
         this.viewingArchived = true;
         this.conversationFinalized = true;
-  
-        // 4) Force update et scroll
         this.cdr.detectChanges();
         this._scrollToBottom();
       },
       error: () => console.error("Unable to load conversation.")
     });
   }
-  
 
   exitArchivedView() {
     this.startNewChat();
@@ -338,27 +309,21 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
   }
 
   private loadConversations() {
-    // Vérifier si c'est un utilisateur invité
     const token = this.cookieService.get('jwt');
     const guestToken = this.cookieService.get('guest_session');
-    
-    // Ne pas charger l'historique pour les invités
     if (!token && guestToken) {
       console.log('Guest user, no conversation history to load');
-      // Pour les invités, on initialise une liste vide
       this.conversationList = [];
       this.cdr.detectChanges();
       return;
     }
-    
     this.chatService.getConversations().subscribe({
-      next: list => {
+      next: (list) => {
         this.conversationList = list;
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error("Unable to fetch conversation history:", err);
-        // En cas d'erreur, initialiser une liste vide
         this.conversationList = [];
         this.cdr.detectChanges();
       }

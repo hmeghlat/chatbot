@@ -9,6 +9,8 @@ import { throwError } from 'rxjs';
 import { QuizComponent } from '../quiz/quiz.component';
 import { ConfidentialityDialogComponent } from '../components/privacy-policy.component';
 import { CookieService } from 'ngx-cookie-service';
+import { ChatSessionService } from '../services/chat-session.service';
+
 
 @Component({
   selector: 'app-login',
@@ -34,7 +36,8 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private http: HttpClient,
     private zone: NgZone,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private sessionService: ChatSessionService
   ) {}
 
   ngOnInit() {
@@ -69,7 +72,10 @@ export class LoginComponent implements OnInit {
     .subscribe(response => {
       if (response.access_token) {
         this.cookieService.set('jwt', response.access_token, { sameSite: 'Lax', secure: true, path: '/' });
+        this.sessionService.setGuestMode(false);
         this.checkQuizAfterLogin();
+        
+
       } else {
         this.authMessage = 'Invalid credentials';
       }

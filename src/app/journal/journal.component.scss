@@ -1,4 +1,3 @@
-
 :host {
   display: block;
   font-family: 'Nunito', sans-serif;
@@ -96,8 +95,6 @@
   }
 }
 
-
-
 .journal-container {
     max-width: 900px;
     margin: 0 auto;
@@ -164,34 +161,80 @@
     }
   
     .entries {
-        margin-top: 1.5rem;
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 10px;
+  
+      .entry {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        position: relative;
+        border-left: 4px solid #6c63ff;
+        transition: all 0.3s ease;
       
-        .entry {
-          background: #fff;
-          border-radius: 0.75rem;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-          padding: 1rem 1.2rem;
-          margin-bottom: 1rem;
-          transition: transform 0.2s ease;
+        &.selected {
+          background-color: rgba(108, 99, 255, 0.2);
+          border-left: 4px solid #ff6384;
+          transform: scale(1.01);
+        }
       
-          .date {
-            font-size: 0.8rem;
-            color: #888;
-            margin-bottom: 0.5rem;
-          }
+        .selection-checkbox {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          width: 18px;
+          height: 18px;
+          cursor: pointer;
+        }
       
-          .text {
-            font-size: 1rem;
-            color: #333;
-            white-space: pre-wrap;
-          }
+        .date {
+          color: #a7a4e0;
+          font-size: 0.8rem;
+          margin-bottom: 8px;
+        }
       
-          &:hover {
-            transform: translateY(-2px);
+        .text {
+          white-space: pre-wrap;
+        }
+      
+        ul {
+          margin: 0;
+          padding-left: 20px;
+      
+          li {
+            margin-bottom: 5px;
           }
         }
       }
-      
+    }
+  
+    .delete-selected-btn {
+      background-color: #ff6384;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 8px 12px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    
+      &:hover {
+        background-color: darken(#ff6384, 10%);
+      }
+    
+      &:before {
+        content: '🗑️';
+        margin-right: 5px;
+      }
+    }
   
     .emotion,
     .association-inputs > div {
@@ -355,20 +398,69 @@
   
   /* === 10-Year Projection === */
   .projection-section {
-    .projection-item {
+    .projection-input {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
       margin-bottom: 1rem;
-  
+    
       input {
-        width: 100%;
-        padding: 0.75rem;
-        font-size: 1rem;
+        flex: 1;
+        min-width: 150px;
+      }
+    
+      button {
+        padding: 0.5rem 1rem;
+        background-color: #6a6af4;
+        color: white;
+        border: none;
         border-radius: 0.75rem;
-        border: 1px solid #ccc;
-        background: #fff;
-  
-        &:focus {
-          border-color: #6a6af4;
-          outline: none;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    
+        &:disabled {
+          background-color: #ccc;
+          cursor: not-allowed;
+        }
+      }
+    }
+    
+    .projection-count {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 1rem;
+    }
+    
+    .projection-display {
+      margin-bottom: 2rem;
+    
+      .projection-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f0f4ff;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        animation: fadeIn 0.3s ease;
+    
+        span {
+          flex: 1;
+        }
+    
+        .remove-btn {
+          background: none;
+          border: none;
+          color: #ff6961;
+          font-size: 1.2rem;
+          font-weight: bold;
+          cursor: pointer;
+          padding: 0 0.5rem;
+          
+          &:hover {
+            color: #e65b55;
+          }
         }
       }
     }
@@ -464,4 +556,44 @@
     }
     }
   }
+  
+// Styles pour les sections déroulables
+.collapsible-section {
+  margin-bottom: 1.5rem;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 1rem 1.5rem;
+    border-radius: 1rem 1rem 0 0;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: rgba(106, 106, 244, 0.05);
+    }
+
+    h2 {
+      margin: 0;
+    }
+
+    .toggle-icon {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+  }
+
+  .section-content {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 1.5rem;
+    transition: max-height 0.5s ease, padding 0.5s ease;
+    
+    &.expanded {
+      max-height: 3000px; // Une valeur suffisamment grande pour contenir tout le contenu
+      padding: 1.5rem;
+    }
+  }
+}
   

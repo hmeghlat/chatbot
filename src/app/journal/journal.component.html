@@ -18,389 +18,480 @@
 
 <div class="journal-container">
     <!-- Free emotional entry -->
-    <section class="entry-section" [@fadeInUp]>
-      <h2>Emotional Journal 📝</h2>
-      <textarea [(ngModel)]="entryText" placeholder="Write how you feel... (free text)" rows="4"></textarea>
-      <div class="buttons">
-        <button (click)="saveEntry()" [disabled]="!entryText.trim()">Save</button>
-        <button (click)="clearEntry()">Clear</button>
+    <section class="entry-section collapsible-section" [@fadeInUp]>
+      <div class="section-header" (click)="toggleSection('entry')">
+        <h2>Emotional Journal 📝</h2>
+        <span class="toggle-icon">{{ isSectionExpanded('entry') ? '▼' : '▶' }}</span>
       </div>
-      <div class="entries">
-        <div class="entry" *ngFor="let entry of entries" [@fadeInUp]>
-          <p class="date">{{ entry.date | date:'short' }}</p>
-          <p class="text">{{ entry.text }}</p>
+      <div class="section-content" [class.expanded]="isSectionExpanded('entry')">
+        <textarea [(ngModel)]="entryText" placeholder="Write how you feel... (free text)" rows="4"></textarea>
+        <div class="buttons">
+          <button (click)="saveEntry()" [disabled]="!entryText.trim()">Save</button>
+          <button (click)="clearEntry()">Clear</button>
+        </div>
+        <div class="entries">
+          <div class="entry" *ngFor="let entry of entries; let i = index" [@fadeInUp] [class.selected]="isSnapshotSelected('entry', i)">
+            <input type="checkbox" class="selection-checkbox" (click)="toggleSnapshotSelection('entry', i)" [checked]="isSnapshotSelected('entry', i)">
+            <p class="date">{{ entry.date | date:'short' }}</p>
+            <p class="text">{{ entry.text }}</p>
+          </div>
+          <button *ngIf="selectedSnapshots['entry'].length > 0" class="delete-selected-btn" (click)="deleteSelectedSnapshots('entry')">
+            Delete Selected ({{ selectedSnapshots['entry'].length }})
+          </button>
         </div>
       </div>
     </section>
   
    <!-- Guided Emotions -->
-<section class="guided-section" [@fadeInUp]>
-  <h2>Explore My Emotions 🌦️</h2>
-
-  <div class="emotion" *ngFor="let item of emotionsList">
-    <label>{{ item.prompt }}</label>
-    <input
-      type="text"
-      [(ngModel)]="item.response"
-      placeholder="Type here..."
-    />
+<section class="guided-section collapsible-section" [@fadeInUp]>
+  <div class="section-header" (click)="toggleSection('emotions')">
+    <h2>Explore My Emotions 🌦️</h2>
+    <span class="toggle-icon">{{ isSectionExpanded('emotions') ? '▼' : '▶' }}</span>
   </div>
+  <div class="section-content" [class.expanded]="isSectionExpanded('emotions')">
+    <div class="emotion" *ngFor="let item of emotionsList">
+      <label>{{ item.prompt }}</label>
+      <input
+        type="text"
+        [(ngModel)]="item.response"
+        placeholder="Type here..."
+      />
+    </div>
 
-  <div class="section-actions">
-    <button (click)="saveEmotions()">Save</button>
-    <button (click)="resetEmotions()">Cancel</button>
-  </div>
+    <div class="section-actions">
+      <button (click)="saveEmotions()">Save</button>
+      <button (click)="resetEmotions()">Cancel</button>
+    </div>
 
-  <!-- Affichage des entrées guidées comme un mini-journal -->
-  <div class="entries emotion-entries" *ngIf="emotionEntries.length">
-    <div class="entry" *ngFor="let emo of emotionEntries">
-      <p class="date">{{ emo.date | date:'short' }}</p>
-      <ul>
-        <li *ngFor="let resp of emo.responses; let i = index">
-          {{ emotionsList[i].prompt }}: {{ resp }}
-        </li>
-      </ul>
+    <!-- Affichage des entrées guidées comme un mini-journal -->
+    <div class="entries emotion-entries" *ngIf="emotionEntries.length">
+      <div class="entry" *ngFor="let emo of emotionEntries; let i = index" [class.selected]="isSnapshotSelected('emotions', i)">
+        <input type="checkbox" class="selection-checkbox" (click)="toggleSnapshotSelection('emotions', i)" [checked]="isSnapshotSelected('emotions', i)">
+        <p class="date">{{ emo.date | date:'short' }}</p>
+        <ul>
+          <li *ngFor="let resp of emo.responses; let j = index">
+            {{ emotionsList[j].prompt }}: {{ resp }}
+          </li>
+        </ul>
+      </div>
+      <button *ngIf="selectedSnapshots['emotions'].length > 0" class="delete-selected-btn" (click)="deleteSelectedSnapshots('emotions')">
+        Delete Selected ({{ selectedSnapshots['emotions'].length }})
+      </button>
     </div>
   </div>
- </section>
+</section>
 
   
  <!-- Conceptual associations -->
-<section class="association-section" [@fadeInUp]>
-  <h2>My Current Associations 🌈</h2>
-
-  <div class="tags">
-    <div><h4>🧠 Rational</h4>
-      <span *ngFor="let word of rationalList" class="tag">{{ word }}</span>
-    </div>
-    <div><h4>💖 Intuitive</h4>
-      <span *ngFor="let word of intuitiveList" class="tag">{{ word }}</span>
-    </div>
+<section class="association-section collapsible-section" [@fadeInUp]>
+  <div class="section-header" (click)="toggleSection('associations')">
+    <h2>My Current Associations 🌈</h2>
+    <span class="toggle-icon">{{ isSectionExpanded('associations') ? '▼' : '▶' }}</span>
   </div>
-
-  <div class="association-inputs">
-    <div *ngFor="let assoc of associations">
-      <label>{{ assoc.label }}</label>
-      <input type="text" [(ngModel)]="assoc.response" placeholder="Type here..." />
+  <div class="section-content" [class.expanded]="isSectionExpanded('associations')">
+    <div class="tags">
+      <div><h4>🧠 Rational</h4>
+        <span *ngFor="let word of rationalList" class="tag">{{ word }}</span>
+      </div>
+      <div><h4>💖 Intuitive</h4>
+        <span *ngFor="let word of intuitiveList" class="tag">{{ word }}</span>
+      </div>
     </div>
-  </div>
 
-  <!-- Save / Cancel -->
-  <div class="section-actions">
-    <button (click)="saveAssociations()">Save</button>
-    <button (click)="resetAssociations()">Cancel</button>
-  </div>
+    <div class="association-inputs">
+      <div *ngFor="let assoc of associations">
+        <label>{{ assoc.label }}</label>
+        <input type="text" [(ngModel)]="assoc.response" placeholder="Type here..." />
+      </div>
+    </div>
 
-  <!-- Journal des association snapshots -->
-  <div class="entries association-entries" *ngIf="associationEntries.length">
-    <h4>Past Association Snapshots</h4>
-    <div class="entry" *ngFor="let snap of associationEntries">
-      <p class="date">{{ snap.date | date:'short' }}</p>
-      <ul>
-        <li *ngFor="let resp of snap.responses; let i = index">
-          {{ associations[i].label }}: {{ resp }}
-        </li>
-      </ul>
+    <!-- Save / Cancel -->
+    <div class="section-actions">
+      <button (click)="saveAssociations()">Save</button>
+      <button (click)="resetAssociations()">Cancel</button>
+    </div>
+
+    <!-- Journal des association snapshots -->
+    <div class="entries association-entries" *ngIf="associationEntries.length">
+      <h4>Past Association Snapshots</h4>
+      <div class="entry" *ngFor="let snap of associationEntries; let i = index" [class.selected]="isSnapshotSelected('associations', i)">
+        <input type="checkbox" class="selection-checkbox" (click)="toggleSnapshotSelection('associations', i)" [checked]="isSnapshotSelected('associations', i)">
+        <p class="date">{{ snap.date | date:'short' }}</p>
+        <ul>
+          <li *ngFor="let resp of snap.responses; let i = index">
+            {{ associations[i].label }}: {{ resp }}
+          </li>
+        </ul>
+      </div>
+      <button *ngIf="selectedSnapshots['associations'].length > 0" class="delete-selected-btn" (click)="deleteSelectedSnapshots('associations')">
+        Delete Selected ({{ selectedSnapshots['associations'].length }})
+      </button>
     </div>
   </div>
 </section>
 
   
   <!-- My life in 10 words -->
-<section class="ten-words-section" [@fadeInUp]>
-  <h2>My Life in 10 Words ✨</h2>
-
-  <!-- zone d'ajout -->
-  <div class="ten-words-input">
-    <input
-      type="text"
-      [(ngModel)]="currentWord"
-      [disabled]="tenWords.length >= maxWords"
-      placeholder="One word..."
-    />
-    <button
-      (click)="addWord()"
-      [disabled]="!currentWord.trim() || tenWords.length >= maxWords"
-    >
-      Add
-    </button>
+<section class="ten-words-section collapsible-section" [@fadeInUp]>
+  <div class="section-header" (click)="toggleSection('tenwords')">
+    <h2>My Life in 10 Words ✨</h2>
+    <span class="toggle-icon">{{ isSectionExpanded('tenwords') ? '▼' : '▶' }}</span>
   </div>
+  <div class="section-content" [class.expanded]="isSectionExpanded('tenwords')">
+    <!-- zone d'ajout -->
+    <div class="ten-words-input">
+      <input
+        type="text"
+        [(ngModel)]="currentWord"
+        [disabled]="tenWords.length >= maxWords"
+        placeholder="One word..."
+      />
+      <button
+        (click)="addWord()"
+        [disabled]="!currentWord.trim() || tenWords.length >= maxWords"
+      >
+        Add
+      </button>
+    </div>
 
-  <!-- Save / Cancel -->
-  <div class="section-actions">
-    <button (click)="saveWords()" [disabled]="tenWords.length === 0">
-      Save
-    </button>
-    <button (click)="resetWords()" class="reset-btn">
-      Cancel
-    </button>
-  </div>
+    <!-- Save / Cancel -->
+    <div class="section-actions">
+      <button (click)="saveWords()" [disabled]="tenWords.length === 0">
+        Save
+      </button>
+      <button (click)="resetWords()" class="reset-btn">
+        Cancel
+      </button>
+    </div>
 
-  <!-- affichage de la liste courante -->
-  <div class="ten-words-display">
-    <span *ngFor="let word of tenWords; let i = index" class="word-chip">
-      {{ word }}
-      <button (click)="removeWord(i)">×</button>
-    </span>
-  </div>
-  <p class="word-count">
-    {{ tenWords.length }} / {{ maxWords }} words
-  </p>
+    <!-- affichage de la liste courante -->
+    <div class="ten-words-display">
+      <span *ngFor="let word of tenWords; let i = index" class="word-chip">
+        {{ word }}
+        <button (click)="removeWord(i)">×</button>
+      </span>
+    </div>
+    <p class="word-count">
+      {{ tenWords.length }} / {{ maxWords }} words
+    </p>
 
-  <!-- mini-journal des anciennes listes -->
-  <div class="entries tenwords-entries" *ngIf="tenWordsEntries.length">
-    <h4>Ten-Words Journal</h4>
-    <div class="entry" *ngFor="let snap of tenWordsEntries">
-      <p class="date">{{ snap.date | date:'short' }}</p>
-      <div class="ten-words-display">
-        <span *ngFor="let w of snap.data" class="word-chip">
-          {{ w }}
-        </span>
+    <!-- mini-journal des anciennes listes -->
+    <div class="entries tenwords-entries" *ngIf="tenWordsEntries.length">
+      <h4>Ten-Words Journal</h4>
+      <div class="entry" *ngFor="let snap of tenWordsEntries; let i = index" [class.selected]="isSnapshotSelected('tenwords', i)">
+        <input type="checkbox" class="selection-checkbox" (click)="toggleSnapshotSelection('tenwords', i)" [checked]="isSnapshotSelected('tenwords', i)">
+        <p class="date">{{ snap.date | date:'short' }}</p>
+        <div class="ten-words-display">
+          <span *ngFor="let w of snap.data" class="word-chip">
+            {{ w }}
+          </span>
+        </div>
       </div>
+      <button *ngIf="selectedSnapshots['tenwords'].length > 0" class="delete-selected-btn" (click)="deleteSelectedSnapshots('tenwords')">
+        Delete Selected ({{ selectedSnapshots['tenwords'].length }})
+      </button>
     </div>
   </div>
 </section>
 
    
  <!-- The Kingdom of 3 -->
-<section class="kingdom-section" [@fadeInUp]>
-  <h2>The Kingdom of 3 👑</h2>
-  <p class="subtitle">3 is a magical number.</p>
-
-  <!-- Inputs dynamiques -->
-  <div
-    class="kingdom-block"
-    *ngFor="let field of kingdomFields; let i = index"
-  >
-    <h4>{{ kingdomTitles[i] }}</h4>
-    <div *ngFor="let j of [0, 1, 2]">
-      <input
-        type="text"
-        [(ngModel)]="kingdomOfThree[field][j]"
-        placeholder="Write here..."
-      />
-    </div>
+<section class="kingdom-section collapsible-section" [@fadeInUp]>
+  <div class="section-header" (click)="toggleSection('kingdom')">
+    <h2>The Kingdom of 3 👑</h2>
+    <span class="toggle-icon">{{ isSectionExpanded('kingdom') ? '▼' : '▶' }}</span>
   </div>
+  <div class="section-content" [class.expanded]="isSectionExpanded('kingdom')">
+    <p class="subtitle">3 is a magical number.</p>
 
-  <!-- Save / Cancel -->
-  <div class="section-actions">
-    <button (click)="saveKingdomOfThree()">Save</button>
-    <button (click)="resetKingdomOfThree()">Cancel</button>
-  </div>
-
-  <!-- Mini-journal Kingdom -->
-  <div class="entries kingdom-entries" *ngIf="kingdomEntries.length">
-    <h4>Kingdom Journal</h4>
-    <div class="entry" *ngFor="let snap of kingdomEntries">
-      <p class="date">{{ snap.date | date:'short' }}</p>
-      
-      <div class="kingdom-snapshot">
-        <!-- Pour chaque champ, on réaffiche le titre + la liste -->
-        <ng-container *ngFor="let field of kingdomFields; let i = index">
-          <h5>{{ kingdomTitles[i] }}</h5>
-          <ul>
-            <li *ngFor="let w of snap.data?.[field] || []">
-              {{ w }}
-            </li>
-          </ul>
-        </ng-container>
+    <!-- Inputs dynamiques -->
+    <div
+      class="kingdom-block"
+      *ngFor="let field of kingdomFields; let i = index"
+    >
+      <h4>{{ kingdomTitles[i] }}</h4>
+      <div *ngFor="let j of [0, 1, 2]">
+        <input
+          type="text"
+          [(ngModel)]="kingdomOfThree[field][j]"
+          placeholder="Write here..."
+        />
       </div>
+    </div>
+
+    <!-- Save / Cancel -->
+    <div class="section-actions">
+      <button (click)="saveKingdomOfThree()">Save</button>
+      <button (click)="resetKingdomOfThree()">Cancel</button>
+    </div>
+
+    <!-- Mini-journal Kingdom -->
+    <div class="entries kingdom-entries" *ngIf="kingdomEntries.length">
+      <h4>Kingdom Journal</h4>
+      <div class="entry" *ngFor="let snap of kingdomEntries; let i = index" [class.selected]="isSnapshotSelected('kingdom', i)">
+        <input type="checkbox" class="selection-checkbox" (click)="toggleSnapshotSelection('kingdom', i)" [checked]="isSnapshotSelected('kingdom', i)">
+        <p class="date">{{ snap.date | date:'short' }}</p>
+        
+        <div class="kingdom-snapshot">
+          <!-- Pour chaque champ, on réaffiche le titre + la liste -->
+          <ng-container *ngFor="let field of kingdomFields; let i = index">
+            <h5>{{ kingdomTitles[i] }}</h5>
+            <ul>
+              <li *ngFor="let w of snap.data?.[field] || []">
+                {{ w }}
+              </li>
+            </ul>
+          </ng-container>
+        </div>
+      </div>
+      <button *ngIf="selectedSnapshots['kingdom'].length > 0" class="delete-selected-btn" (click)="deleteSelectedSnapshots('kingdom')">
+        Delete Selected ({{ selectedSnapshots['kingdom'].length }})
+      </button>
     </div>
   </div>
 </section>
 
 
  <!-- Motivation & Perseverance -->
-<section class="motivation-section" [@fadeInUp]>
-  <h2>Mmmm... Motivation 💡</h2>
-  <p class="subtitle">What gives me the drive to keep going</p>
+<section class="motivation-section collapsible-section" [@fadeInUp]>
+  <div class="section-header" (click)="toggleSection('motivation')">
+    <h2>Mmmm... Motivation 💡</h2>
+    <span class="toggle-icon">{{ isSectionExpanded('motivation') ? '▼' : '▶' }}</span>
+  </div>
+  <div class="section-content" [class.expanded]="isSectionExpanded('motivation')">
+    <p class="subtitle">What gives me the drive to keep going</p>
 
-  <!-- Partie 1 -->
-  <div class="motivation-block">
-    <label>My confidence comes from...</label>
-    <input type="text" [(ngModel)]="motivation.confidenceSource" placeholder="Type here..." />
-  </div>
-  <div class="motivation-block">
-    <label>Things that excite me:</label>
-    <input type="text" [(ngModel)]="motivation.excitingThings" placeholder="Type here..." />
-  </div>
-  <div class="motivation-block">
-    <label>The thing I’ll never give up on:</label>
-    <input type="text" [(ngModel)]="motivation.neverGiveUpOn" placeholder="Type here..." />
-  </div>
-  <div class="motivation-block">
-    <label>My heart tells me...</label>
-    <input type="text" [(ngModel)]="motivation.heartSays" placeholder="Type here..." />
-  </div>
-  <div class="motivation-block">
-    <label>My head tells me...</label>
-    <input type="text" [(ngModel)]="motivation.headSays" placeholder="Type here..." />
-  </div>
+    <!-- Partie 1 -->
+    <div class="motivation-block">
+      <label>My confidence comes from...</label>
+      <input type="text" [(ngModel)]="motivation.confidenceSource" placeholder="Type here..." />
+    </div>
+    <div class="motivation-block">
+      <label>Things that excite me:</label>
+      <input type="text" [(ngModel)]="motivation.excitingThings" placeholder="Type here..." />
+    </div>
+    <div class="motivation-block">
+      <label>The thing I'll never give up on:</label>
+      <input type="text" [(ngModel)]="motivation.neverGiveUpOn" placeholder="Type here..." />
+    </div>
+    <div class="motivation-block">
+      <label>My heart tells me...</label>
+      <input type="text" [(ngModel)]="motivation.heartSays" placeholder="Type here..." />
+    </div>
+    <div class="motivation-block">
+      <label>My head tells me...</label>
+      <input type="text" [(ngModel)]="motivation.headSays" placeholder="Type here..." />
+    </div>
 
-  <!-- Partie 2 -->
-  <h2>What keeps me going 🔥</h2>
-  <div class="motivation-block">
-    <label>The thing I hold on to:</label>
-    <input type="text" [(ngModel)]="motivation.holdOnTo" placeholder="Type here..." />
-  </div>
-  <div class="motivation-block">
-    <label>Things that make me try harder:</label>
-    <input type="text" [(ngModel)]="motivation.effortTriggers" placeholder="Type here..." />
-  </div>
-  <div class="motivation-block">
-    <label>A fear that drives me:</label>
-    <input type="text" [(ngModel)]="motivation.drivingFear" placeholder="Type here..." />
-  </div>
-  <div class="motivation-block">
-    <label>A goal that motivates me:</label>
-    <input type="text" [(ngModel)]="motivation.motivatingGoal" placeholder="Type here..." />
-  </div>
+    <!-- Partie 2 -->
+    <h2>What keeps me going 🔥</h2>
+    <div class="motivation-block">
+      <label>The thing I hold on to:</label>
+      <input type="text" [(ngModel)]="motivation.holdOnTo" placeholder="Type here..." />
+    </div>
+    <div class="motivation-block">
+      <label>Things that make me try harder:</label>
+      <input type="text" [(ngModel)]="motivation.effortTriggers" placeholder="Type here..." />
+    </div>
+    <div class="motivation-block">
+      <label>A fear that drives me:</label>
+      <input type="text" [(ngModel)]="motivation.drivingFear" placeholder="Type here..." />
+    </div>
+    <div class="motivation-block">
+      <label>A goal that motivates me:</label>
+      <input type="text" [(ngModel)]="motivation.motivatingGoal" placeholder="Type here..." />
+    </div>
 
-  <!-- Save / Cancel -->
-  <div class="section-actions">
-    <button (click)="saveMotivation()">Save</button>
-    <button (click)="resetMotivation()">Cancel</button>
-  </div>
+    <!-- Save / Cancel -->
+    <div class="section-actions">
+      <button (click)="saveMotivation()">Save</button>
+      <button (click)="resetMotivation()">Cancel</button>
+    </div>
 
-  <!-- Mini-journal des motivations -->
-  <div class="entries motivation-entries" *ngIf="motivationEntries.length">
-    <h4>Motivation Journal</h4>
-    <div class="entry" *ngFor="let snap of motivationEntries">
-      <p class="date">{{ snap.date | date:'short' }}</p>
-      <ul>
-        <li><strong>Confidence comes from:</strong> {{ snap.data.confidenceSource }}</li>
-        <li><strong>Things that excite me:</strong> {{ snap.data.excitingThings }}</li>
-        <li><strong>Never give up on:</strong> {{ snap.data.neverGiveUpOn }}</li>
-        <li><strong>My heart tells me:</strong> {{ snap.data.heartSays }}</li>
-        <li><strong>My head tells me:</strong> {{ snap.data.headSays }}</li>
-        <li><strong>Hold on to:</strong> {{ snap.data.holdOnTo }}</li>
-        <li><strong>Try harder when:</strong> {{ snap.data.effortTriggers }}</li>
-        <li><strong>A fear that drives me:</strong> {{ snap.data.drivingFear }}</li>
-        <li><strong>A goal that motivates me:</strong> {{ snap.data.motivatingGoal }}</li>
-      </ul>
+    <!-- Mini-journal des motivations -->
+    <div class="entries motivation-entries" *ngIf="motivationEntries.length">
+      <h4>Motivation Journal</h4>
+      <div class="entry" *ngFor="let snap of motivationEntries; let i = index" [class.selected]="isSnapshotSelected('motivation', i)">
+        <input type="checkbox" class="selection-checkbox" (click)="toggleSnapshotSelection('motivation', i)" [checked]="isSnapshotSelected('motivation', i)">
+        <p class="date">{{ snap.date | date:'short' }}</p>
+        <ul>
+          <li><strong>Confidence comes from:</strong> {{ snap.data.confidenceSource }}</li>
+          <li><strong>Things that excite me:</strong> {{ snap.data.excitingThings }}</li>
+          <li><strong>Never give up on:</strong> {{ snap.data.neverGiveUpOn }}</li>
+          <li><strong>My heart tells me:</strong> {{ snap.data.heartSays }}</li>
+          <li><strong>My head tells me:</strong> {{ snap.data.headSays }}</li>
+          <li><strong>Hold on to:</strong> {{ snap.data.holdOnTo }}</li>
+          <li><strong>Try harder when:</strong> {{ snap.data.effortTriggers }}</li>
+          <li><strong>A fear that drives me:</strong> {{ snap.data.drivingFear }}</li>
+          <li><strong>A goal that motivates me:</strong> {{ snap.data.motivatingGoal }}</li>
+        </ul>
+      </div>
+      <button *ngIf="selectedSnapshots['motivation'].length > 0" class="delete-selected-btn" (click)="deleteSelectedSnapshots('motivation')">
+        Delete Selected ({{ selectedSnapshots['motivation'].length }})
+      </button>
     </div>
   </div>
 </section>
 
-  <!-- Life Goals -->
-<section class="goals-section" [@fadeInUp]>
-  <h2>My Life Goals 🎯</h2>
-
-  <!-- Inputs dynamiques -->
-  <div class="goal-block"
-       *ngFor="let field of goalsFields; let i = index">
-    <label>{{ goalsTitles[i] }}</label>
-    <input
-      type="text"
-      [(ngModel)]="objectives[field]"
-      (ngModelChange)="onObjectiveChange(field, $event)"
-      [ngModelOptions]="{ standalone: true }"
-      placeholder="Type here..."
-    />
+<!-- Life Goals -->
+<section class="goals-section collapsible-section" [@fadeInUp]>
+  <div class="section-header" (click)="toggleSection('goals')">
+    <h2>My Life Goals 🎯</h2>
+    <span class="toggle-icon">{{ isSectionExpanded('goals') ? '▼' : '▶' }}</span>
   </div>
+  <div class="section-content" [class.expanded]="isSectionExpanded('goals')">
+    <!-- Inputs dynamiques -->
+    <div class="goal-block"
+        *ngFor="let field of goalsFields; let i = index">
+      <label>{{ goalsTitles[i] }}</label>
+      <input
+        type="text"
+        [(ngModel)]="objectives[field]"
+        (ngModelChange)="onObjectiveChange(field, $event)"
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Type here..."
+      />
+    </div>
 
-  <!-- Save / Cancel -->
-  <div class="section-actions">
-    <button (click)="saveGoals()">Save</button>
-    <button (click)="resetGoals()">Cancel</button>
-  </div>
+    <!-- Save / Cancel -->
+    <div class="section-actions">
+      <button (click)="saveGoals()">Save</button>
+      <button (click)="resetGoals()">Cancel</button>
+    </div>
 
-  <!-- Mini-journal des objectifs -->
-  <div class="entries goals-entries" *ngIf="goalsEntries.length">
-    <h4>Goals Journal</h4>
-    <div class="entry" *ngFor="let snap of goalsEntries">
-      <p class="date">{{ snap.date | date:'short' }}</p>
-      <ul>
-        <li *ngFor="let field of goalsFields; let i = index">
-          <strong>{{ goalsTitles[i] }}</strong> {{ snap.data[field] }}
-        </li>
-      </ul>
+    <!-- Mini-journal des objectifs -->
+    <div class="entries goals-entries" *ngIf="goalsEntries.length">
+      <h4>Goals Journal</h4>
+      <div class="entry" *ngFor="let snap of goalsEntries; let i = index" [class.selected]="isSnapshotSelected('goals', i)">
+        <input type="checkbox" class="selection-checkbox" (click)="toggleSnapshotSelection('goals', i)" [checked]="isSnapshotSelected('goals', i)">
+        <p class="date">{{ snap.date | date:'short' }}</p>
+        <ul>
+          <li *ngFor="let field of goalsFields; let i = index">
+            <strong>{{ goalsTitles[i] }}</strong> {{ snap.data[field] }}
+          </li>
+        </ul>
+      </div>
+      <button *ngIf="selectedSnapshots['goals'].length > 0" class="delete-selected-btn" (click)="deleteSelectedSnapshots('goals')">
+        Delete Selected ({{ selectedSnapshots['goals'].length }})
+      </button>
     </div>
   </div>
 </section>
 
-  
-  <!-- First Steps -->
-<section class="resolutions-section" [@fadeInUp]>
-  <h2>It All Starts With a First Step 🪜</h2>
-
-  <div class="resolution-block">
-    <label>Small resolutions I could take today:</label>
-    <textarea rows="3"
-              [(ngModel)]="resolutions.small"
-              placeholder="Write here..."></textarea>
-
-    <label><em>First step to achieve it:</em></label>
-    <input type="text"
-           [(ngModel)]="resolutions.smallStep"
-           placeholder="Type here..." />
+<!-- First Steps -->
+<section class="resolutions-section collapsible-section" [@fadeInUp]>
+  <div class="section-header" (click)="toggleSection('resolutions')">
+    <h2>It All Starts With a First Step 🪜</h2>
+    <span class="toggle-icon">{{ isSectionExpanded('resolutions') ? '▼' : '▶' }}</span>
   </div>
+  <div class="section-content" [class.expanded]="isSectionExpanded('resolutions')">
+    <div class="resolution-block">
+      <label>Small resolutions I could take today:</label>
+      <textarea rows="3"
+                [(ngModel)]="resolutions.small"
+                placeholder="Write here..."></textarea>
 
-  <div class="resolution-block">
-    <label>Big resolutions I plan to take tomorrow:</label>
-    <textarea rows="3"
-              [(ngModel)]="resolutions.big"
-              placeholder="Write here..."></textarea>
+      <label><em>First step to achieve it:</em></label>
+      <input type="text"
+            [(ngModel)]="resolutions.smallStep"
+            placeholder="Type here..." />
+    </div>
 
-    <label><em>First step to achieve it:</em></label>
-    <input type="text"
-           [(ngModel)]="resolutions.bigStep"
-           placeholder="Type here..." />
-  </div>
+    <div class="resolution-block">
+      <label>Big resolutions I plan to take tomorrow:</label>
+      <textarea rows="3"
+                [(ngModel)]="resolutions.big"
+                placeholder="Write here..."></textarea>
 
-  <!-- Save / Cancel -->
-  <div class="section-actions">
-    <button (click)="saveResolutions()">Save</button>
-    <button (click)="resetResolutions()">Cancel</button>
-  </div>
+      <label><em>First step to achieve it:</em></label>
+      <input type="text"
+            [(ngModel)]="resolutions.bigStep"
+            placeholder="Type here..." />
+    </div>
 
-  <!-- Mini-journal des First Steps -->
-  <div class="entries resolutions-entries" *ngIf="resolutionsEntries.length">
-    <h4>First Steps Journal</h4>
-    <div class="entry" *ngFor="let snap of resolutionsEntries">
-      <p class="date">{{ snap.date | date:'short' }}</p>
-      <ul>
-        <li><strong>Small resolution:</strong> {{ snap.data.small }}</li>
-        <li><strong>Step to achieve it:</strong> {{ snap.data.smallStep }}</li>
-        <li><strong>Big resolution:</strong> {{ snap.data.big }}</li>
-        <li><strong>Step to achieve it:</strong> {{ snap.data.bigStep }}</li>
-      </ul>
+    <!-- Save / Cancel -->
+    <div class="section-actions">
+      <button (click)="saveResolutions()">Save</button>
+      <button (click)="resetResolutions()">Cancel</button>
+    </div>
+
+    <!-- Mini-journal des First Steps -->
+    <div class="entries resolutions-entries" *ngIf="resolutionsEntries.length">
+      <h4>First Steps Journal</h4>
+      <div class="entry" *ngFor="let snap of resolutionsEntries; let i = index" [class.selected]="isSnapshotSelected('resolutions', i)">
+        <input type="checkbox" class="selection-checkbox" (click)="toggleSnapshotSelection('resolutions', i)" [checked]="isSnapshotSelected('resolutions', i)">
+        <p class="date">{{ snap.date | date:'short' }}</p>
+        <ul>
+          <li><strong>Small resolution:</strong> {{ snap.data.small }}</li>
+          <li><strong>Step to achieve it:</strong> {{ snap.data.smallStep }}</li>
+          <li><strong>Big resolution:</strong> {{ snap.data.big }}</li>
+          <li><strong>Step to achieve it:</strong> {{ snap.data.bigStep }}</li>
+        </ul>
+      </div>
+      <button *ngIf="selectedSnapshots['resolutions'].length > 0" class="delete-selected-btn" (click)="deleteSelectedSnapshots('resolutions')">
+        Delete Selected ({{ selectedSnapshots['resolutions'].length }})
+      </button>
     </div>
   </div>
 </section>
 
 <!-- 10-Year Projection -->
-<section class="projection-section" [@fadeInUp]>
-  <h2>Projection in 10 Years 🔮</h2>
-
-  <!-- Inputs -->
-  <div
-    *ngFor="let item of projection; let i = index; trackBy: trackByIndex"
-    class="projection-item"
-  >
-    <input
-      type="text"
-      [(ngModel)]="projection[i]"
-      placeholder="In 10 years, I will..."
-    />
+<section class="projection-section collapsible-section" [@fadeInUp]>
+  <div class="section-header" (click)="toggleSection('projection')">
+    <h2>Projection in 10 Years 🔮</h2>
+    <span class="toggle-icon">{{ isSectionExpanded('projection') ? '▼' : '▶' }}</span>
   </div>
+  <div class="section-content" [class.expanded]="isSectionExpanded('projection')">
+    <!-- Zone d'ajout de projection -->
+    <div class="projection-input">
+      <input
+        type="text"
+        [(ngModel)]="currentProjection"
+        [disabled]="projection.length >= maxProjections"
+        placeholder="In 10 years, I will..."
+      />
+      <button
+        (click)="addProjection()"
+        [disabled]="!currentProjection.trim() || projection.length >= maxProjections"
+      >
+        Add
+      </button>
+    </div>
 
-  <!-- Save / Cancel -->
-  <div class="section-actions">
-    <button (click)="saveProjection()">Save</button>
-    <button (click)="resetProjection()">Cancel</button>
-  </div>
+    <!-- Compteur de projections -->
+    <p class="projection-count">
+      {{ projection.length }} / {{ maxProjections }} projections
+    </p>
 
-  <!-- Mini-journal des projections -->
-  <div class="entries projection-entries" *ngIf="projectionEntries.length">
-    <h4>Projection Journal</h4>
-    <div class="entry" *ngFor="let snap of projectionEntries">
-      <p class="date">{{ snap.date | date:'short' }}</p>
-      <ul>
-        <li *ngFor="let p of snap.data">
-          {{ p }}
-        </li>
-      </ul>
+    <!-- Liste des projections actuelles -->
+    <div class="projection-display">
+      <div *ngFor="let item of projection; let i = index" class="projection-item">
+        <span>{{ item }}</span>
+        <button (click)="removeProjection(i)" class="remove-btn">×</button>
+      </div>
+    </div>
+
+    <!-- Save / Cancel -->
+    <div class="section-actions">
+      <button (click)="saveProjection()" [disabled]="projection.length === 0">Save</button>
+      <button (click)="resetProjection()">Cancel</button>
+    </div>
+
+    <!-- Mini-journal des projections -->
+    <div class="entries projection-entries" *ngIf="projectionEntries.length">
+      <h4>Projection Journal</h4>
+      <div class="entry" *ngFor="let snap of projectionEntries; let i = index" [class.selected]="isSnapshotSelected('projection', i)">
+        <input type="checkbox" class="selection-checkbox" (click)="toggleSnapshotSelection('projection', i)" [checked]="isSnapshotSelected('projection', i)">
+        <p class="date">{{ snap.date | date:'short' }}</p>
+        <ul>
+          <li *ngFor="let p of snap.data">
+            {{ p }}
+          </li>
+        </ul>
+      </div>
+      <button *ngIf="selectedSnapshots['projection'].length > 0" class="delete-selected-btn" (click)="deleteSelectedSnapshots('projection')">
+        Delete Selected ({{ selectedSnapshots['projection'].length }})
+      </button>
     </div>
   </div>
 </section>
