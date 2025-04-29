@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, tap, mergeMap } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
+import { ConversationDetail } from '../chat/chat.component';
 
 @Injectable({
   providedIn: 'root'
@@ -95,14 +96,14 @@ export class ChatService {
     );
   }
 
-  getConversationById(convId: string): Observable<any> {
+  getConversationById(convId: string): Observable<ConversationDetail> {
     // Pour les invités, on ne permet pas d'accéder à des conversations spécifiques
     if (this.isGuestUser()) {
       console.log('Guest user cannot access specific conversations');
       return of({ messages: [] });
     }
 
-    return this.http.get<any>(
+    return this.http.get<ConversationDetail>(
       `${this.BASE_URL}/conversations/${convId}`,
       { headers: this.getAuthHeaders() }
     );

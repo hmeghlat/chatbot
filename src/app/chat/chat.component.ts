@@ -1,13 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  ViewChild,
-  OnInit,
-  AfterContentInit,
-  AfterViewInit,
-  ChangeDetectorRef,
-  NgZone
-} from '@angular/core';
+import {Component,ElementRef,ViewChild,OnInit,AfterContentInit,AfterViewInit,ChangeDetectorRef,NgZone} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MarkdownModule } from 'ngx-markdown';
@@ -21,6 +12,30 @@ import { ChatService } from '../services/chat.service';
 import { ReportService } from '../services/report.service';
 import { ChatSessionService } from '../services/chat-session.service';
 import { AccountDialogComponent } from '../account-dialog/account-dialog.component';
+
+
+// 1) Déclare le format d’un message dans une conversation
+interface ChatMessage {
+  sender: 'bot' | 'user';
+  text: string;
+}
+
+
+export interface ConversationDetail {
+  messages: ChatMessage[];
+  // si ton API renvoie d’autres champs, tu peux les lister ici
+}
+// 1) Structure brute renvoyée par ton API /conversations
+interface RawConversation {
+  conversation_id: string;
+  timestamp:       string;
+}
+
+// 2) Structure finale pour la sidebar (on y ajoute 'title')
+interface ConversationSidebarItem extends RawConversation {
+  title: string;
+}
+
 
 @Component({
   selector: 'app-chat',
@@ -37,6 +52,8 @@ import { AccountDialogComponent } from '../account-dialog/account-dialog.compone
     ])
   ]
 })
+
+
 export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
   @ViewChild('chatMessages') chatMessagesRef!: ElementRef;
 
@@ -46,9 +63,12 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
   conversationFinalized = false;
   viewingArchived = false;
   generatingReport = false;
+  
 
 
-  conversationList: { conversation_id: string; timestamp: string; title?: string }[] = [];
+  conversationList: ConversationSidebarItem[] = [];
+
+
   selectedConversationId: string | null = null;
 
   wordLimit = 400;
@@ -309,26 +329,45 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
   }
 
   private loadConversations() {
-    const token = this.cookieService.get('jwt');
-    const guestToken = this.cookieService.get('guest_session');
-    if (!token && guestToken) {
-      console.log('Guest user, no conversation history to load');
-      this.conversationList = [];
-      this.cdr.detectChanges();
-      return;
-    }
     this.chatService.getConversations().subscribe({
-      next: (list) => {
-        this.conversationList = list;
-        this.cdr.detectChanges();
+      next: (list: RawConversation[]) => {
+        this.conversationList = list.map(item => ({
+          conversation_id: item.conversation_id,
+          timestamp:       item.timestamp,
+          title:           ''
+        }));
+
+        this.conversationList.forEach((conv, idx) => {
+          this.chatService.getConversationById(conv.conversation_id)
+            .subscribe({
+              next: (fullConv: { messages: ChatMessage[] }) => {
+                const firstUser = fullConv.messages.find(m => m.sender === 'user');
+                if (firstUser) {
+                  const snippet = firstUser.text.length > 30
+                    ? firstUser.text.slice(0, 30).trim() + '…'
+                    : firstUser.text;
+                  this.conversationList[idx].title = snippet;
+                } else {
+                  this.conversationList[idx].title =
+                    new Date(conv.timestamp).toLocaleDateString();
+                }
+                this.cdr.detectChanges();
+              },
+              error: () => {
+                this.conversationList[idx].title =
+                  new Date(conv.timestamp).toLocaleDateString();
+                this.cdr.detectChanges();
+              }
+            });
+        });
       },
-      error: (err) => {
-        console.error("Unable to fetch conversation history:", err);
+      error: err => {
+        console.error('Unable to fetch conversation history:', err);
         this.conversationList = [];
-        this.cdr.detectChanges();
       }
     });
   }
+
 
   private _scrollToBottom() {
     setTimeout(() => {
