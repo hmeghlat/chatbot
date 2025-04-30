@@ -16,8 +16,13 @@ export class AppComponent implements OnInit {
   
   ngOnInit() {
     // Vérifier si nous sommes à la racine et forcer la redirection vers landing page
-    if (window.location.pathname === '/' || window.location.pathname === '') {
+    if (this.isRootPath()) {
       this.router.navigate(['/landing']);
     }
+  }
+
+  // Méthode extraite pour faciliter les tests
+  private isRootPath(): boolean {
+    return window.location.pathname === '/' || window.location.pathname === '';
   }
 }

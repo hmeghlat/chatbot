@@ -1,18 +1,27 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ReportsComponent } from './report.component';
+import { ReportService } from '../services/report.service';
+import { of } from 'rxjs';
 
-import { ReportComponent } from './report.component';
-
-describe('ReportComponent', () => {
-  let component: ReportComponent;
-  let fixture: ComponentFixture<ReportComponent>;
+describe('ReportsComponent', () => {
+  let component: ReportsComponent;
+  let fixture: ComponentFixture<ReportsComponent>;
+  let reportServiceSpy: jasmine.SpyObj<ReportService>;
 
   beforeEach(async () => {
+    const spy = jasmine.createSpyObj('ReportService', ['generateGeneralReport', 'generateConversationReport', 'downloadReport']);
+    
     await TestBed.configureTestingModule({
-      imports: [ReportComponent]
+      imports: [ReportsComponent, HttpClientTestingModule],
+      providers: [
+        { provide: ReportService, useValue: spy }
+      ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ReportComponent);
+    reportServiceSpy = TestBed.inject(ReportService) as jasmine.SpyObj<ReportService>;
+    fixture = TestBed.createComponent(ReportsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
