@@ -377,7 +377,9 @@ export class ChatComponent implements OnInit, AfterContentInit, AfterViewInit {
   }
 
   private _appendBotMessage(text: string) {
-    this.messages.push({ text, sender: 'bot' });
+    // Nettoyer le message en retirant les préfixes "user :" ou "bot :"
+    const cleanedText = text.replace(/^(user|bot)\s*:\s*/i, '');
+    this.messages.push({ text: cleanedText, sender: 'bot' });
     this.cdr.detectChanges();
     this._scrollToBottom();
   }
